@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="hongwei&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Java反射机制笔记 | 你只管努力，其他的。 交给天意。
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/css/plugins/gitment.css">
+  
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>你只管努力，其他的。 交给天意。</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="https://github.com/JiaoHongwei" class="item-link">GitHub</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="https://github.com/JiaoHongwei" class="menu-link">GitHub</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Java反射机制笔记</h2>
+  <p class="post-date">2018-11-30</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="一、概述-amp-应用场景"><a href="#一、概述-amp-应用场景" class="headerlink" title="一、概述&amp;应用场景"></a>一、概述&amp;应用场景</h1><ul>
+<li>Java反射机制是在运行状态中，对于任意一个类（Class）文件，都能够知道这个类的所有属性和方法；</li>
+<li>对于任意一个对象，都能够调用它的任意一个方法和属性；</li>
+<li>这种动态获取的信息以及动态调用对象的方法的功能成为Java语言的反射机制。</li>
+</ul>
+<blockquote>
+<p>简单说就是动态获取类中信息就是反射机制。</p>
+</blockquote>
+<blockquote>
+<p>可以理解为对类的解剖。</p>
+</blockquote>
+<hr>
+<h1 id="二、细节-amp-Class对象"><a href="#二、细节-amp-Class对象" class="headerlink" title="二、细节&amp;Class对象"></a>二、细节&amp;Class对象</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Class&#123;</span><br><span class="line">    提供获取字节码文件中的内容。</span><br><span class="line">    比如：</span><br><span class="line">    名称，字段，构造函数，一般函数</span><br><span class="line">&#125;</span><br><span class="line">// 该类就可以获取字节码文件中的所有内容，那么反射就是依靠该类完成的。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>想要对一个类文件进行解刨，只需要获取到该类的字节码文件对象即可。</li>
+</ul>
+<blockquote>
+<p>java.lang.Class<t> </t></p>
+</blockquote>
+<ul>
+<li>Class类的类表示正在运行的Java应用程序中的类和接口。 </li>
+<li>枚举是一种类，一个注释是一种界面。 每个数组也属于一个反映为类对象的类，该对象由具有相同元素类型和维数的所有数组共享。 </li>
+<li>原始Java类型（ boolean ， byte ， char ， short ， int ， long ， float和double ），和关键字void也表示为类对象。 </li>
+<li>类没有公共构造函数。 相反， 类对象由Java虚拟机自动构建，因为加载了类，并且通过调用类加载器中的defineClass方法。</li>
+</ul>
+<hr>
+<h1 id="三、获取Class对象的三种方式"><a href="#三、获取Class对象的三种方式" class="headerlink" title="三、获取Class对象的三种方式"></a>三、获取Class对象的三种方式</h1><p>要想对字节码文件进行解刨，必须要有字节码文件对象</p>
+<ol>
+<li>Object类中的getClass方法</li>
+<li>通过对象静态属性 .class来获取对应的Class对象</li>
+<li>只要通过给定类的字符串名称就可以获取该类，更为拓展</li>
+</ol>
+<h2 id="1-object-getClass"><a href="#1-object-getClass" class="headerlink" title="1.  object.getClass()"></a>1.  object.getClass()</h2><blockquote>
+<p>创建Person类</p>
+</blockquote>
+<p>必须要明确具体的类，并且要创建对象，麻烦。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.hw.bean;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span> Administrator</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2018/11/29</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(name + <span class="string">"... show run ..."</span> + age);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"privateMethod run..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">paramMethod</span><span class="params">(String str, <span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"paramMethod run..."</span> + str + <span class="string">": "</span> + num);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">staticMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"staticMethod run ... "</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        System.out.println(<span class="string">"person run ..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name, <span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        System.out.println(<span class="string">"person param run ... name="</span> + name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>测试用例</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 获取Class对象的三种方式</span><br><span class="line"> * 1.Object类中的getClass()方法，必须要明确具体的类，并且要创建对象，麻烦。</span><br><span class="line"> */</span><br><span class="line">@Test</span><br><span class="line">public void getClassObject_1() &#123;</span><br><span class="line">    Person person = new Person();</span><br><span class="line">    Class clazz = person.getClass();</span><br><span class="line"></span><br><span class="line">    Person person1 = new Person();</span><br><span class="line">    Class clazz1 = person1.getClass();</span><br><span class="line"></span><br><span class="line">    System.out.println(clazz == clazz1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130000917879.png" alt></p>
+<h2 id="2-Object-class"><a href="#2-Object-class" class="headerlink" title="2. Object.class"></a>2. Object.class</h2><p>相对简单，但是还是需要先明确类中的静态成员。不够拓展。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 通过对象静态属性 .class来获取对应的Class对象</span><br><span class="line"> */</span><br><span class="line">public void getClassObject_2() &#123;</span><br><span class="line">    Class clazz = Person.class;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-Class-forName-className"><a href="#3-Class-forName-className" class="headerlink" title="3. Class.forName(className)"></a>3. Class.forName(className)</h2><p>这种方法只要有名称即可，更为方便，拓展性更强。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 方式三：只要通过给定类的字符串名称就可以获取该类，更为拓展，forName</span><br><span class="line"> */</span><br><span class="line">@Test</span><br><span class="line">public void getClassObject_3() throws ClassNotFoundException &#123;</span><br><span class="line">    String className = &quot;com.hw.bean.Person&quot;;</span><br><span class="line">    Class clazz = Class.forName(className);</span><br><span class="line">    System.out.println(clazz);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130002216418.png" alt></p>
+<hr>
+<h1 id="四、获取Class中的构造函数"><a href="#四、获取Class中的构造函数" class="headerlink" title="四、获取Class中的构造函数"></a>四、获取Class中的构造函数</h1><h2 id="1-new创建对象"><a href="#1-new创建对象" class="headerlink" title="1. new创建对象"></a>1. new创建对象</h2><ul>
+<li>早期创建对象,先根据被new的类的名称找寻该类的字节码文件，并加载进内存，并创建该字节码文件对象，并接着创建该接文件的对应的Person对象</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.hw.bean.Person p = new com.hw.bean.Person();</span><br></pre></td></tr></table></figure>
+<h2 id="2-反射创建对象"><a href="#2-反射创建对象" class="headerlink" title="2. 反射创建对象"></a>2. 反射创建对象</h2><ul>
+<li>找寻该名称类文件，并加载进内存，调用newInstance() 创建由此 类对象表示的类的新实例。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void createNewObject_1() throws Exception &#123;</span><br><span class="line">    // 早期创建对象,先根据被new的类的名称找寻该类的字节码文件，并加载进内存，</span><br><span class="line">    // 并创建该字节码文件对象，并接着创建该接文件的对应的Person对象</span><br><span class="line">    com.hw.bean.Person p = new com.hw.bean.Person();</span><br><span class="line"></span><br><span class="line">    // 现在</span><br><span class="line">    String name = &quot;com.hw.bean.Person&quot;;</span><br><span class="line">    // 找寻该名称类文件，并加载进内存，并产生Class对象</span><br><span class="line">    Class clazz = Class.forName(name);</span><br><span class="line">    // 通过空参构造器获取实例</span><br><span class="line">    Object obj = clazz.newInstance();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130004030863.png" alt></p>
+<ul>
+<li>当获取指定名称对应类中的所体现的对象时，而该对象初始化不是用空参数构造该怎么办呢？</li>
+<li>既然是通过指定的构造函数，进行对象的初始化，所以应该先获取到构造函数。</li>
+</ul>
+<h2 id="3-获取Class中的构造函数"><a href="#3-获取Class中的构造函数" class="headerlink" title="3. 获取Class中的构造函数"></a>3. 获取Class中的构造函数</h2><blockquote>
+<p>getConstructor(类&lt;?&gt;… parameterTypes) </p>
+</blockquote>
+<ul>
+<li>返回一个 Constructor对象，该对象反映 Constructor对象表示的类的指定的公共 类函数。 </li>
+<li>parameterTypes参数是以声明顺序标识构造函数的形式参数类型的类对象的数组。</li>
+<li>如果此类对象表示在非静态上下文中声明的内部类，则形式参数类型将显式包围实例作为第一个参数。</li>
+<li>反映的构造是这样表示的类的公共构造类对象，其形式参数类型匹配那些由指定的parameterTypes 。 </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void createNewObject_2() throws Exception &#123;</span><br><span class="line">    String name = &quot;com.hw.bean.Person&quot;;</span><br><span class="line">    Class clazz = Class.forName(name);</span><br><span class="line">    // 获取指定方法参数的构造对象</span><br><span class="line">    Constructor constructor = clazz.getConstructor(String.class, int.class);</span><br><span class="line">    System.out.println(constructor);</span><br><span class="line">    // 通过该构造器对象的newInstance()方法进行对象的初始化</span><br><span class="line">    Object obj = constructor.newInstance(&quot;小明&quot;, 22);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130005233982.png" alt></p>
+<hr>
+<h1 id="五、获取Class中的字段"><a href="#五、获取Class中的字段" class="headerlink" title="五、获取Class中的字段"></a>五、获取Class中的字段</h1><h2 id="1-getField-String-name"><a href="#1-getField-String-name" class="headerlink" title="1. getField(String name)"></a>1. getField(String name)</h2><ul>
+<li>返回一个 Field对象，它反映此表示的类或接口的指定公共成员字段 类对象。 </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 获取字节码文件的字段</span><br><span class="line"> */</span><br><span class="line">@Test</span><br><span class="line">public void getFieldDemo() throws Exception &#123;</span><br><span class="line"></span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line">    Field name = clazz.getField(&quot;name&quot;);</span><br><span class="line">    System.out.println(name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130005820538.png" alt></p>
+<p>报错，原因是字段是私有的。</p>
+<p>要反映的字段由以下算法确定。 让C成为由该对象表示的类或接口： </p>
+<ul>
+<li>如果C声明一个具有指定名称的公共字段，那就是要反映的字段。 </li>
+<li>如果在上述步骤1中没有找到字段，则将该算法递归地应用于C的每个直接超级接口。直接超级接口按照它们被声明的顺序被搜索。 </li>
+<li>如果在上面的步骤1和2中没有找到字段，并且C具有超类S，则该算法在S上递归地调用。如果C没有超类，则抛出NoSuchFieldException 。 </li>
+</ul>
+<h2 id="2-getDeclaredField-String-name"><a href="#2-getDeclaredField-String-name" class="headerlink" title="2. getDeclaredField(String name)"></a>2. getDeclaredField(String name)</h2><ul>
+<li>只获取本类 但包含私有</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void getFieldDemo() throws Exception &#123;</span><br><span class="line"></span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line"></span><br><span class="line">    Field field = // clazz.getField(&quot;name&quot;);</span><br><span class="line">            clazz.getDeclaredField(&quot;name&quot;);</span><br><span class="line">    Object instance = clazz.newInstance();</span><br><span class="line">    Object age = field.get(instance);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130010456310.png" alt></p>
+<p>还是报错，不能访问私有的</p>
+<h2 id="3-AccessibleObject-属性"><a href="#3-AccessibleObject-属性" class="headerlink" title="3. AccessibleObject 属性"></a>3. AccessibleObject 属性</h2><ul>
+<li>AccessibleObject类是Field，Method和Constructor对象的基类。 它提供了将反射对象标记为在使用它时抑制默认Java语言访问控制检查的功能。</li>
+<li>当使用Fields，Methods或Constructors来设置或获取字段，调用方法，或创建和初始化新的类实例时，执行访问检查（对于public，默认（包）访问，受保护和私有成员）。</li>
+</ul>
+<blockquote>
+<p>setAccessible(boolean flag)  暴力访问</p>
+</blockquote>
+<ul>
+<li>将此对象的 accessible标志设置为指示的布尔值。 </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void getFieldDemo() throws Exception &#123;</span><br><span class="line"></span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line"></span><br><span class="line">    Field field = // clazz.getField(&quot;name&quot;);</span><br><span class="line">            clazz.getDeclaredField(&quot;name&quot;);</span><br><span class="line">    // 对私有字段的访问取消权限检查。暴力访问</span><br><span class="line">    field.setAccessible(true);</span><br><span class="line">    Object instance = clazz.newInstance();</span><br><span class="line">    // 对字段赋值</span><br><span class="line">    field.set(instance,&quot;张四&quot;);</span><br><span class="line">    Object name = field.get(instance);</span><br><span class="line">    System.out.println(name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130011330038.png" alt></p>
+<hr>
+<h1 id="六、获取Class中的方法"><a href="#六、获取Class中的方法" class="headerlink" title="六、获取Class中的方法"></a>六、获取Class中的方法</h1><h2 id="1-getMethods"><a href="#1-getMethods" class="headerlink" title="1. getMethods()"></a>1. getMethods()</h2><ul>
+<li><p>获取的都是共有的方法（包括父类）</p>
+</li>
+<li><p>返回包含一个数组 方法对象反射由此表示的类或接口的所有公共方法 类对象，包括那些由类或接口和那些从超类和超接口继承的声明。</p>
+</li>
+<li>如果此类对象表示具有多个具有相同名称和参数类型但具有不同返回类型的公共方法的类型，则返回的数组对于每个此类方法都有一个方法对象。 </li>
+<li>如果此类对象表示与类初始化方法的类型<clinit> ，则返回的阵列不具有相应的方法对象。 </clinit></li>
+<li>如果此类对象表示一个数组类型，则返回的阵列具有方法对于每个由阵列类型从继承的公共方法对象Object 。 它不包含方法对象clone() 。 </li>
+<li>如果此类对象表示一个接口，那么返回的数组不包含任何隐含声明的方法，从Object 。因此，如果在此接口或其任何超级接口中没有显式声明方法，则返回的数组的长度为0.（注意，表示类的类对象始终具有从Object公共方法）。 </li>
+<li>如果此类对象表示原始类型或空值，则返回的数组的长度为0。 </li>
+<li>由此类对象表示的类或接口的超级接口中声明的静态方法不被视为类或接口的成员。 </li>
+<li>返回的数组中的元素不会被排序，并且不是以任何特定的顺序。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 获取指定Class中的公共函数</span><br><span class="line"> */</span><br><span class="line">@Test</span><br><span class="line">public void getMethodDemo() throws Exception &#123;</span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line">    Method[] methods = clazz.getMethods();</span><br><span class="line">    for (Method method : methods) &#123;</span><br><span class="line">        System.out.println(method);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130012039348.png" alt></p>
+<h2 id="2-getDeclaredMethods"><a href="#2-getDeclaredMethods" class="headerlink" title="2. getDeclaredMethods()"></a>2. getDeclaredMethods()</h2><ul>
+<li>获取本类中的所有的方法（包含私有的）</li>
+<li>返回包含一个数组方法对象反射的类或接口的所有声明的方法，通过此表示类对象，包括公共，保护，默认（包）访问和私有方法，但不包括继承的方法。 </li>
+<li>如果此类对象表示具有多个具有相同名称和参数类型但具有不同返回类型的声明方法的类型，则返回的数组对于每个此类方法都有一个方法对象。 </li>
+<li>如果此类对象表示具有类初始化方法的类型<clinit> ，则返回的阵列不具有相应的方法对象。 </clinit></li>
+<li>如果此类对象表示没有声明方法的类或接口，则返回的数组的长度为0。 </li>
+<li>如果这个类对象表示一个数组类型，一个基本类型，或者是void，则返回的数组的长度为0。 </li>
+<li>返回的数组中的元素不会被排序，并且不是以任何特定的顺序。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void getMethodDemo_2() throws Exception &#123;</span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line">    Method[] methods = clazz.getDeclaredMethods();</span><br><span class="line">    for (Method method : methods) &#123;</span><br><span class="line">        System.out.println(method);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130012438582.png" alt></p>
+<h2 id="3-getMethod-String-name-类-lt-gt-…-parameterTypes"><a href="#3-getMethod-String-name-类-lt-gt-…-parameterTypes" class="headerlink" title="3. getMethod(String name, 类&lt;?&gt;… parameterTypes)"></a>3. getMethod(String name, 类&lt;?&gt;… parameterTypes)</h2><ul>
+<li>获取单个方法</li>
+<li>返回一个方法对象，它反映此表示的类或接口的指定公共成员方法类对象。 </li>
+<li>name参数是一个String它指定了所需方法的简单名称。 </li>
+<li>parameterTypes参数是以声明顺序标识方法的形式参数类型的类对象的数组。 </li>
+<li>如果parameterTypes是null ，它被视为一个空数组。 </li>
+</ul>
+<blockquote>
+<p>方法无参 方式一：使用无参构造器（默认） method.invoke(o, null)</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void getMethodDemo_3() throws Exception &#123;</span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line">    // 获取空参的一般方法</span><br><span class="line">    Method method = clazz.getMethod(&quot;show&quot;, null);</span><br><span class="line">    Object o = clazz.newInstance();</span><br><span class="line">    method.invoke(o, null);</span><br><span class="line">    System.out.println(method);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130013410485.png" alt></p>
+<blockquote>
+<p>方法无参 方式二：使用有参构造器  method.invoke(o, null)</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void getMethodDemo_4() throws Exception &#123;</span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line">    // 获取空参的一般方法</span><br><span class="line">    Method method = clazz.getMethod(&quot;show&quot;, null);</span><br><span class="line">    // 获取带参构造器</span><br><span class="line">    Constructor constructor = clazz.getConstructor(String.class, int.class);</span><br><span class="line">    Object o = constructor.newInstance(&quot;小明&quot;, 12);</span><br><span class="line">    method.invoke(o, null);</span><br><span class="line">    System.out.println(method);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130013645030.png" alt></p>
+<blockquote>
+<p>方法有参 </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void getMethodDemo_5() throws Exception &#123;</span><br><span class="line">    Class clazz = Class.forName(&quot;com.hw.bean.Person&quot;);</span><br><span class="line">    Method method = clazz.getMethod(&quot;paramMethod&quot;, String.class, int.class);</span><br><span class="line">    // 获取带参构造器</span><br><span class="line">    Constructor constructor = clazz.getConstructor(String.class, int.class);</span><br><span class="line">    Object o = constructor.newInstance(&quot;小明&quot;, 12);</span><br><span class="line">    method.invoke(o, &quot;张三&quot;, 18);</span><br><span class="line">    System.out.println(method);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<p><img src="/2018/11/30/Java反射机制笔记/20181130014202027.png" alt></p>
+<hr>
+<h1 id="七、源码"><a href="#七、源码" class="headerlink" title="七、源码"></a>七、源码</h1><p>本章节源码: <a href="https://github.com/JiaoHongwei/Reflection" target="_blank" rel="noopener">ReflectDemo</a></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Java高级编程">
+    <span class="tag-code">Java高级编程</span>
+  </a>
+
+  <a href="/tags#反射">
+    <span class="tag-code">反射</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、概述-amp-应用场景"><span class="toc-nav-text">一、概述&amp;应用场景</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、细节-amp-Class对象"><span class="toc-nav-text">二、细节&amp;Class对象</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、获取Class对象的三种方式"><span class="toc-nav-text">三、获取Class对象的三种方式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-object-getClass"><span class="toc-nav-text">1.  object.getClass()</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-Object-class"><span class="toc-nav-text">2. Object.class</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-Class-forName-className"><span class="toc-nav-text">3. Class.forName(className)</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、获取Class中的构造函数"><span class="toc-nav-text">四、获取Class中的构造函数</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-new创建对象"><span class="toc-nav-text">1. new创建对象</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-反射创建对象"><span class="toc-nav-text">2. 反射创建对象</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-获取Class中的构造函数"><span class="toc-nav-text">3. 获取Class中的构造函数</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#五、获取Class中的字段"><span class="toc-nav-text">五、获取Class中的字段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-getField-String-name"><span class="toc-nav-text">1. getField(String name)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-getDeclaredField-String-name"><span class="toc-nav-text">2. getDeclaredField(String name)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-AccessibleObject-属性"><span class="toc-nav-text">3. AccessibleObject 属性</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#六、获取Class中的方法"><span class="toc-nav-text">六、获取Class中的方法</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-getMethods"><span class="toc-nav-text">1. getMethods()</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-getDeclaredMethods"><span class="toc-nav-text">2. getDeclaredMethods()</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-getMethod-String-name-类-lt-gt-…-parameterTypes"><span class="toc-nav-text">3. getMethod(String name, 类&lt;?&gt;… parameterTypes)</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#七、源码"><span class="toc-nav-text">七、源码</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://jiaohongwei.github.io/2018/11/30/Java反射机制笔记/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "jiaohongwei";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "Java反射机制笔记",
+        owner: "jiaohongwei",
+        repo: "jiaohongwei.github.io",
+        oauth: {
+          client_id: "2ac0968c10be35494f4b",
+          client_secret: "e8afa8b7adbeb92905f17b646db578138e5c2bde"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'false';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
