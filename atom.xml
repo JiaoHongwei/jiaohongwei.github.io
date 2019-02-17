@@ -43,6 +43,32 @@
   </entry>
   
   <entry>
+    <title>Linux cp/rm/mv强制覆盖</title>
+    <link href="https://jiaohongwei.github.io/2017/08/18/Linux-cp-rm-mv%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96/"/>
+    <id>https://jiaohongwei.github.io/2017/08/18/Linux-cp-rm-mv强制覆盖/</id>
+    <published>2017-08-18T10:34:00.000Z</published>
+    <updated>2019-02-17T03:44:45.091Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>本文记述Linux下的cp/rm/mv强制覆盖以及在Java中的调用（博客园文章迁移）</p></blockquote><h1 id="一、Linux下的cp-rm-mv强制覆盖"><a href="#一、Linux下的cp-rm-mv强制覆盖" class="headerlink" title="一、Linux下的cp/rm/mv强制覆盖"></a>一、Linux下的cp/rm/mv强制覆盖</h1><h2 id="1-反斜杠（-）临时取消别名"><a href="#1-反斜杠（-）临时取消别名" class="headerlink" title="1. 反斜杠（\）临时取消别名"></a>1. 反斜杠（\）临时取消别名</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# \cp filename new/filename   </span><br><span class="line">[root@fz ~]#</span><br></pre></td></tr></table></figure><h2 id="2-unalias-取消别名"><a href="#2-unalias-取消别名" class="headerlink" title="2. unalias 取消别名"></a>2. unalias 取消别名</h2><blockquote><p>注意：这只是临时取消cp的别名，不是永久的</p></blockquote><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]# unalias cp   </span><br><span class="line">[root@localhost ~]# cp filename new/filename   </span><br><span class="line">[root@localhost ~]#</span><br></pre></td></tr></table></figure><h2 id="3-修改默认配置文件"><a href="#3-修改默认配置文件" class="headerlink" title="3. 修改默认配置文件"></a>3. 修改默认配置文件</h2><blockquote><p>输入alias命令，看到系统内部使用的是cp、mv、rm -i 所以怎么输入都是提示覆盖。</p></blockquote><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]#</span><br><span class="line">[root@fz ~]# alias</span><br><span class="line">alias cdd=&apos;cd /home/data/android/&apos;</span><br><span class="line">alias cp=&apos;cp -i&apos;</span><br><span class="line">alias l=&apos;ls -la&apos;</span><br><span class="line">alias l.=&apos;ls -d .* --color=auto&apos;</span><br><span class="line">alias ll=&apos;ls -l --color=auto&apos;</span><br><span class="line">alias ls=&apos;ls --color=auto&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">alias tf=&apos;tail -f &apos;</span><br><span class="line">alias vc=&apos;vim ~/.bash_profile&apos;</span><br><span class="line">alias vs=&apos;source ~/.bash_profile&apos;</span><br><span class="line">alias which=&apos;alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde&apos;</span><br></pre></td></tr></table></figure><blockquote><p>修改 ~/.bashrc ，在 “alias cp=’cp -i’ ”前添加<code>#</code>号注释后即可。</p></blockquote><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz test]# vi ~/.bashrc </span><br><span class="line"># .bashrc</span><br><span class="line"></span><br><span class="line"># User specific aliases and functions</span><br><span class="line"></span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">#alias cp=&apos;cp -i&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line"></span><br><span class="line"># Source global definitions</span><br><span class="line">if [ -f /etc/bashrc ]; then</span><br><span class="line">        . /etc/bashrc</span><br><span class="line">fi</span><br></pre></td></tr></table></figure><blockquote><p>重启或者执行 source ~/.bashrc 让命令生效</p></blockquote><h2 id="4-yes指令-管道-自动输入yes"><a href="#4-yes指令-管道-自动输入yes" class="headerlink" title="4. yes指令+管道 自动输入yes"></a>4. yes指令+管道 自动输入yes</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# yes | cp filename new/filename   </span><br><span class="line">cp: overwrite `new/filename&apos;? [root@localhost ~]#</span><br></pre></td></tr></table></figure><hr><h1 id="二、Java后台调用Linux命令实现"><a href="#二、Java后台调用Linux命令实现" class="headerlink" title="二、Java后台调用Linux命令实现"></a>二、Java后台调用Linux命令实现</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void copyIcon() throws IOException, InterruptedException &#123;</span><br><span class="line">      Runtime r = Runtime.getRuntime();</span><br><span class="line">      String cmd_copy = &quot;\\cp -rf temp/AppIcon/*  icon/&quot;;    //copy并覆盖</span><br><span class="line">      String[] cmds = new String[]&#123;&quot;sh&quot;,&quot;-c&quot;,cmd_copy&#125;;</span><br><span class="line">      Process p = r.exec(cmds);</span><br><span class="line">      int result = p.waitFor();</span><br><span class="line">      if (result == 0)&#123;   //表示正常结束</span><br><span class="line">          logger.error(&quot;【copy appIcon 成功】&quot;);</span><br><span class="line">      &#125;else &#123;</span><br><span class="line">          logger.error(&quot;【copy appIcon 失败】&quot;+cmd_copy);</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;本文记述Linux下的cp/rm/mv强制覆盖以及在Java中的调用（博客园文章迁移）&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;一、Linux下的cp-rm-mv强制覆盖&quot;&gt;&lt;a href=&quot;#一、Linux下的cp-rm-mv强制覆盖
+      
+    
+    </summary>
+    
+    
+      <category term="Linux" scheme="https://jiaohongwei.github.io/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Oracle CLOB 笔记</title>
     <link href="https://jiaohongwei.github.io/2017/08/18/Oracle-CLOB-%E7%AC%94%E8%AE%B0/"/>
     <id>https://jiaohongwei.github.io/2017/08/18/Oracle-CLOB-笔记/</id>
