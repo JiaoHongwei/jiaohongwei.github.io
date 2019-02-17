@@ -10,7 +10,7 @@
   
   <title>
     
-      Base64编码原理 | Hongwei&#39;s Diary
+      双重锁单例模式笔记 | Hongwei&#39;s Diary
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -156,8 +156,8 @@
 </header>
 
     <div id="article-banner">
-  <h2>Base64编码原理</h2>
-  <p class="post-date">2018-12-11</p>
+  <h2>双重锁单例模式笔记</h2>
+  <p class="post-date">2019-01-10</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -166,40 +166,40 @@
   <!-- Article START -->
   <article class="post-article">
     <section class="markdown-content"><blockquote>
-<p>本文记述Base64的编码原理（博客园文章迁移）</p>
+<p>本文介绍了双重锁的单例模式实现方式和部分问题解答（有道云笔记迁移）</p>
 </blockquote>
-<ul>
-<li>Base64是编码方式不是加密方式</li>
-<li>标准的ASCII码 128个中96个可见字符，其余为不可见字符，为了避免不可见字符</li>
-<li>使用了64个可见字符进行编码</li>
-</ul>
-<h1 id="一、原理步骤"><a href="#一、原理步骤" class="headerlink" title="一、原理步骤"></a>一、原理步骤</h1><p>例如：Hello</p>
-<h2 id="1-先转成二进制"><a href="#1-先转成二进制" class="headerlink" title="1. 先转成二进制"></a>1. 先转成二进制</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">01001000 01100101 01101100 01101100 01101111 00000000</span><br></pre></td></tr></table></figure>
-<h2 id="2-打乱重编码，以6个一组进行重编码，不满足的需要补0"><a href="#2-打乱重编码，以6个一组进行重编码，不满足的需要补0" class="headerlink" title="2. 打乱重编码，以6个一组进行重编码，不满足的需要补0"></a>2. 打乱重编码，以6个一组进行重编码，不满足的需要补0</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">010010 000110 010101 101100 011011 000110 111100 000000</span><br></pre></td></tr></table></figure>
-<ul>
-<li>注意：为什么要6个一组，因为一共64个可见字符， 000000 转成十进制是0 ，111111 转成十进制是63，正好64个编号和64个可见字符一一对应。</li>
-<li>24 是8 和6 的最小公倍数，所以要筹够24</li>
-</ul>
-<h2 id="3-然后6个一组转为十进制"><a href="#3-然后6个一组转为十进制" class="headerlink" title="3. 然后6个一组转为十进制"></a>3. 然后6个一组转为十进制</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">18 6 21 44 27 6 60 0</span><br></pre></td></tr></table></figure>
-<ul>
-<li>补出来的0 结尾都要变成=号</li>
-</ul>
-<h2 id="4-去Base64-对照表拿出相应的字符"><a href="#4-去Base64-对照表拿出相应的字符" class="headerlink" title="4. 去Base64 对照表拿出相应的字符"></a>4. 去Base64 对照表拿出相应的字符</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SGVsbG8=</span><br></pre></td></tr></table></figure>
-<h1 id="二、图解"><a href="#二、图解" class="headerlink" title="二、图解"></a>二、图解</h1><p><img src="/2018/12/11/Base64编码原理/20181211003958788.png" alt></p>
-<h1 id="三、Base64索引表"><a href="#三、Base64索引表" class="headerlink" title="三、Base64索引表"></a>三、Base64索引表</h1><p><img src="/2018/12/11/Base64编码原理/20181211004306149.png" alt></p>
-<h1 id="四、注意事项"><a href="#四、注意事项" class="headerlink" title="四、注意事项"></a>四、注意事项</h1><p>如果要编码的字节数不能被3整除，最后会多出1个或2个字节，那么可以使用下面的方法进行处理：</p>
-<ul>
-<li>先使用0字节值在末尾补足，使其能够被3整除，然后再进行Base64的编码。在编码后的Base64文本后加上一个或两个=号，代表补足的字节数。也就是说，当最后剩余两个八位字节（2个byte）时，最后一个6位的Base64字节块有四位是0值，最后附加上两个等号；</li>
-<li>如果最后剩余一个八位字节（1个byte）时，最后一个6位的base字节块有两位是0值，最后附加一个等号。 </li>
-</ul>
+<h1 id="一、代码实现"><a href="#一、代码实现" class="headerlink" title="一、代码实现"></a>一、代码实现</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @Description 双重锁单例模式</span><br><span class="line"> * @Author hw</span><br><span class="line"> * @Date 2019/1/10 16:27</span><br><span class="line"> * @Version 1.0</span><br><span class="line"> */</span><br><span class="line">public class SingleTon &#123;</span><br><span class="line">     private static volatile SingleTon singleTon;</span><br><span class="line">     private SingleTon() &#123;&#125;</span><br><span class="line">    public static SingleTon getInstance() &#123;</span><br><span class="line">        if (singleTon == null) &#123;</span><br><span class="line">            synchronized (SingleTon.class) &#123;</span><br><span class="line">                if (singleTon == null) &#123;</span><br><span class="line">                    singleTon = new SingleTon();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return singleTon;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>编译后的字节码指令</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">10: monitorenter</span><br><span class="line">11: getstatic     #2                  // Field singleTon:LSingleTon;</span><br><span class="line">14: ifnonnull     27</span><br><span class="line">17: new           #3                  // class SingleTon</span><br><span class="line">20: dup</span><br><span class="line">21: invokespecial #4                  // Method &quot;&lt;init&gt;&quot;:()V</span><br><span class="line">24: putstatic     #2                  // Field singleTon:LSingleTon;</span><br><span class="line">27: aload_0</span><br><span class="line">28: monitorexit</span><br></pre></td></tr></table></figure>
+<h1 id="二、为什么需要volatile？"><a href="#二、为什么需要volatile？" class="headerlink" title="二、为什么需要volatile？"></a>二、为什么需要volatile？</h1><h2 id="1-禁止指令重排序（有序性）"><a href="#1-禁止指令重排序（有序性）" class="headerlink" title="1. 禁止指令重排序（有序性）"></a>1. 禁止指令重排序（有序性）</h2><blockquote>
+<p>实例化一个对象其实可以分为三个步骤：　　</p>
+</blockquote>
+<ol>
+<li>分配内存空间。　　</li>
+<li>初始化对象。　　</li>
+<li>将内存空间的地址赋值给对应的引用。</li>
+</ol>
+<blockquote>
+<p>但是由于操作系统可以对指令进行重排序，所以上面的过程也可能会变成如下过程：　　</p>
+<ol>
+<li>分配内存空间。　　</li>
+<li>将内存空间的地址赋值给对应的引用。　　</li>
+<li>初始化对象</li>
+</ol>
+</blockquote>
+<h2 id="2-保证singleTon对象的可见性"><a href="#2-保证singleTon对象的可见性" class="headerlink" title="2. 保证singleTon对象的可见性"></a>2. 保证singleTon对象的可见性</h2><h1 id="三、如果synchronized里面不加if判断会发生什么？"><a href="#三、如果synchronized里面不加if判断会发生什么？" class="headerlink" title="三、如果synchronized里面不加if判断会发生什么？"></a>三、如果synchronized里面不加if判断会发生什么？</h1><blockquote>
+<p>多个线程竞争synchronize锁，只有一个拿到，剩下的会在锁释放的时候再次进行new 操作，就会导致执行多次，出现多个实例。</p>
+</blockquote>
 </section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#Java高级编程">
-    <span class="tag-code">Java高级编程</span>
+  <a href="/tags#设计模式">
+    <span class="tag-code">设计模式</span>
   </a>
 
       </div>
@@ -210,17 +210,17 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2018/12/10/开放API接口安全处理/">
+      <a class="nav-left" href="/2018/12/11/Base64编码原理/">
         <span class="nav-arrow">← </span>
         
-          开放API接口安全处理
+          Base64编码原理
         
       </a>
     
     
-      <a class="nav-right" href="/2019/01/10/双重锁单例模式笔记/">
+      <a class="nav-right" href="/2019/01/10/冒泡排序/">
         
-          双重锁单例模式笔记
+          冒泡排序
         
         <span class="nav-arrow"> →</span>
       </a>
@@ -269,7 +269,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、原理步骤"><span class="toc-nav-text">一、原理步骤</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-先转成二进制"><span class="toc-nav-text">1. 先转成二进制</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-打乱重编码，以6个一组进行重编码，不满足的需要补0"><span class="toc-nav-text">2. 打乱重编码，以6个一组进行重编码，不满足的需要补0</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-然后6个一组转为十进制"><span class="toc-nav-text">3. 然后6个一组转为十进制</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-去Base64-对照表拿出相应的字符"><span class="toc-nav-text">4. 去Base64 对照表拿出相应的字符</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、图解"><span class="toc-nav-text">二、图解</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、Base64索引表"><span class="toc-nav-text">三、Base64索引表</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、注意事项"><span class="toc-nav-text">四、注意事项</span></a></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、代码实现"><span class="toc-nav-text">一、代码实现</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、为什么需要volatile？"><span class="toc-nav-text">二、为什么需要volatile？</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-禁止指令重排序（有序性）"><span class="toc-nav-text">1. 禁止指令重排序（有序性）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-保证singleTon对象的可见性"><span class="toc-nav-text">2. 保证singleTon对象的可见性</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、如果synchronized里面不加if判断会发生什么？"><span class="toc-nav-text">三、如果synchronized里面不加if判断会发生什么？</span></a></li></ol>
     
   </div>
 </aside>
@@ -279,7 +279,7 @@
 
 <script>
   (function () {
-    var url = 'https://jiaohongwei.github.io/2018/12/11/Base64编码原理/';
+    var url = 'https://jiaohongwei.github.io/2019/01/10/双重锁单例模式笔记/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -341,7 +341,7 @@
     var gitmentConfig = "jiaohongwei";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "Base64编码原理",
+        id: "双重锁单例模式笔记",
         owner: "jiaohongwei",
         repo: "jiaohongwei.github.io",
         oauth: {
