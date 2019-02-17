@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="hongwei&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Oracle CLOB 笔记 | 你只管努力，其他的。 交给天意。
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/css/plugins/gitment.css">
+  
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>你只管努力，其他的。 交给天意。</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="https://github.com/JiaoHongwei" class="item-link">GitHub</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="https://github.com/JiaoHongwei" class="menu-link">GitHub</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Oracle CLOB 笔记</h2>
+  <p class="post-date">2017-08-18</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><blockquote>
+<p>本文记述Oracle的CLOB大数据字段类型（博客园文章迁移）</p>
+</blockquote>
+<h1 id="一、Oracle中的varchar2类型"><a href="#一、Oracle中的varchar2类型" class="headerlink" title="一、Oracle中的varchar2类型"></a>一、Oracle中的varchar2类型</h1><ul>
+<li>我们在Oracle数据库存储的字符数据一般是用VARCHAR2。VARCHAR2既分PL/SQL Data Types中的变量类型，也分Oracle Database中的字段类型，不同场景的最大长度不同。</li>
+<li>在Oracle Database中，VARCHAR2 字段类型，最大值为4000；PL/SQL中 VARCHAR2 变量类型，最大字节长度为32767。</li>
+<li>当 VARCHAR2 容纳不下我们需要存储的信息时，就出来的Oracle的大数据类型LOB( Large Object，大型对象)。</li>
+</ul>
+<hr>
+<h1 id="二、Oarcle中的LOB类型"><a href="#二、Oarcle中的LOB类型" class="headerlink" title="二、Oarcle中的LOB类型"></a>二、Oarcle中的LOB类型</h1><ul>
+<li>在Oracle中，LOB（Large Object，大型对象）类型的字段现在用得越来越多了。因为这种类型的字段，容量大（最多能容纳4GB的数据），且一个表中可以有多个这种类型的字段，很灵活，适用于数据量非常大的业务领域（如图象、档案等）。</li>
+<li>LOB类型分为BLOB和CLOB两种：BLOB即二进制大型对象（Binary Large Object），适用于存贮非文本的字节流数据（如程序、图象、影音等）。</li>
+<li>而CLOB，即字符型大型对象（Character Large Object），则与字符集相关，适于存贮文本型的数据（如历史档案、大部头著作等）。</li>
+</ul>
+<hr>
+<h1 id="三、DB中使用CLOB类型字段"><a href="#三、DB中使用CLOB类型字段" class="headerlink" title="三、DB中使用CLOB类型字段"></a>三、DB中使用CLOB类型字段</h1><h2 id="1-创建表"><a href="#1-创建表" class="headerlink" title="1. 创建表"></a>1. 创建表</h2><blockquote>
+<p>（使用sql或者直接在PL/SQL客户端创建），字段类型CLOB</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- Create table</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> TEMP</span><br><span class="line">(</span><br><span class="line">  <span class="keyword">name</span>      VARCHAR2(<span class="number">200</span>),</span><br><span class="line">  age       <span class="built_in">NUMBER</span>,</span><br><span class="line">  temp_clob <span class="keyword">CLOB</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">tablespace</span> INSIGHTDATA3_TS</span><br><span class="line">  pctfree <span class="number">10</span></span><br><span class="line">  <span class="keyword">initrans</span> <span class="number">1</span></span><br><span class="line">  <span class="keyword">maxtrans</span> <span class="number">255</span></span><br><span class="line">  <span class="keyword">storage</span></span><br><span class="line">  (</span><br><span class="line">    <span class="keyword">initial</span> <span class="number">160</span>K</span><br><span class="line">    <span class="keyword">next</span> <span class="number">1</span>M</span><br><span class="line">    <span class="keyword">minextents</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">maxextents</span> <span class="keyword">unlimited</span></span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+<h2 id="2-增删改查"><a href="#2-增删改查" class="headerlink" title="2. 增删改查"></a>2. 增删改查</h2><p>先看一下使用普通方式的sql操作CLOB类型：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t.name, t.temp_clob <span class="keyword">FROM</span> temp t; <span class="comment">--普通查询 INSERT INTO temp t VALUES ('Grand.Jon', 22, '加入博客园的第一天');</span></span><br></pre></td></tr></table></figure>
+<p>查询因为不是varchar2类型，所以普通查询看不到CLOB类型的字段内容，结果如下</p>
+<p><img src="/2017/08/18/Oracle-CLOB-笔记/20170818131552506.png" alt></p>
+<p>而普通插入操作也会因为Oracle的隐式转换，默认把字符串转换成varchar2类型，一旦字符串内容超过varchar2的最大限度就会报会报ora-01704（字符串太长）错误。</p>
+<p>正确操作：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">--使用PL/SQL语法，采取绑定变量的方式解决，而不是直接拼接SQL</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DECLARE</span> </span><br><span class="line">       V_LANG <span class="keyword">CLOB</span> := <span class="string">'待插入的海量字符串'</span>;</span><br><span class="line">       </span><br><span class="line">       V_UPDATE CLOB := '更新的海量字符串';</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">INSERT</span> <span class="keyword">INTO</span> temp t <span class="keyword">VALUES</span> (<span class="string">'Grand.Jon'</span>, <span class="number">22</span>, V_LANG);        <span class="comment">--增加</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">UPDATE</span> temp t <span class="keyword">SET</span> t.temp_clob = V_UPDATE <span class="keyword">WHERE</span> <span class="keyword">rownum</span> = <span class="number">1</span>;  <span class="comment">--修改</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">SELECT</span> t.NAME, dbms_lob.substr(t.temp_clob) <span class="keyword">FROM</span> TEMP t;    <span class="comment">--查询　　将CLOB转成字符类型</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">DELETE</span> temp t <span class="keyword">WHERE</span> <span class="keyword">rownum</span> = <span class="number">1</span>;                             <span class="comment">--按列删除　　</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">COMMIT</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">/</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>对CLOB的操作我们在存储过程中基本上使用 dbms_lob 中 substr , append , write 等方法。</p>
+</blockquote>
+<p>dbms_lob 方法总结</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">dbms_lob.createtemporary(V_SQL,true);     <span class="comment">--创建一个临时clob，用来存储拼接的sql</span></span><br><span class="line">dbms_lob.write(v_SQL,'写入信息');          <span class="comment">--写入操作</span></span><br><span class="line">dbms_lob.append(v_SQL,',');               <span class="comment">--拼接clob</span></span><br><span class="line">dbms_lob.substr(v_SQL);                   <span class="comment">--截取clob，不传参数就是全部读取</span></span><br><span class="line">dbms_lob.freetemporary(v_SQL);            <span class="comment">--释放clob</span></span><br></pre></td></tr></table></figure>
+<p>查询结果如下：</p>
+<p><img src="/2017/08/18/Oracle-CLOB-笔记/20170818133801834.png" alt></p>
+<hr>
+<h1 id="四、在存储过程中使用CLOB类型实例"><a href="#四、在存储过程中使用CLOB类型实例" class="headerlink" title="四、在存储过程中使用CLOB类型实例"></a>四、在存储过程中使用CLOB类型实例</h1><blockquote>
+<p>需求：以开发的存储过程为例，需要循环遍历时间范围拼接sql，将时间日期按列反转（pivot），如果时间太长（1年以上）sql语句（varchar2）就会超出范围报错，这时候就需要使用CLOB来存储拼接的sql。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">PROCEDURE P_AND_CPT_RATIOOTH_APP_BAK2_N(</span><br><span class="line">            V_APPIDS IN VARCHAR2,</span><br><span class="line">            V_TYPE IN VARCHAR2,</span><br><span class="line">            V_CHANNEL IN VARCHAR2,</span><br><span class="line">            V_TABLE IN VARCHAR2,</span><br><span class="line">            V_START IN VARCHAR2,</span><br><span class="line">            V_END IN VARCHAR2,</span><br><span class="line">            RESULT OUT mycursor</span><br><span class="line">) IS</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">V_SQL CLOB;</span><br><span class="line">V_SQLWHERE VARCHAR2(32767) default  '';</span><br><span class="line">V_SQLWHERE_CHANNEL VARCHAR2(32767) default '';</span><br><span class="line">V_SQL_DATES  CLOB;</span><br><span class="line">V_Sdate  DATE;</span><br><span class="line">V_Edate  DATE;</span><br><span class="line">V_TABLE_DATE VARCHAR2(50);</span><br><span class="line">V_TABLE_TYPE VARCHAR2(50);</span><br><span class="line">V_START_DATE VARCHAR2(50);</span><br><span class="line">V_END_DATE   VARCHAR2(50);</span><br><span class="line"></span><br><span class="line">V_DAY VARCHAR2(50);</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">    <span class="keyword">select</span> column_name <span class="keyword">into</span> V_TABLE_DATE <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> table_name=<span class="string">''</span>||V_TABLE||<span class="string">''</span> <span class="keyword">and</span> column_id=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">select</span> column_name <span class="keyword">into</span> V_TABLE_TYPE <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> table_name=<span class="string">''</span>||V_TABLE||<span class="string">''</span> <span class="keyword">and</span> column_id=<span class="number">5</span>;</span><br><span class="line">  </span><br><span class="line">    dbms_lob.createtemporary(V_SQL,true);<span class="comment">--创建一个临时lob</span></span><br><span class="line">    dbms_lob.createtemporary(V_SQL_DATES,true);<span class="comment">--创建一个临时lob</span></span><br><span class="line">    </span><br><span class="line">    IF V_APPIDS is NOT NULL THEN</span><br><span class="line">       V_SQLWHERE := 'AND t.appid in ('||V_APPIDS||')';</span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"></span><br><span class="line">    IF V_CHANNEL IS NOT NULL THEN</span><br><span class="line">       V_SQLWHERE_CHANNEL := 'AND t.channel = '''||V_CHANNEL||'''';</span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">    </span><br><span class="line">    IF V_TABLE_DATE = 'MON' THEN</span><br><span class="line">       V_START_DATE := SUBSTR(V_START,0,6);</span><br><span class="line">       V_END_DATE :=  SUBSTR(V_END,0,6);</span><br><span class="line">       v_sdate := to_date(V_START_DATE, 'yyyymm');</span><br><span class="line">       v_edate := to_date(V_END_DATE, 'yyyymm');</span><br><span class="line">       </span><br><span class="line">        WHILE (v_sdate &lt;= v_edate) LOOP</span><br><span class="line">              dbms_lob.append(v_SQL_DATES,to_char(v_sdate, 'yyyymm'));<span class="comment">--把临时字符串付给v_str</span></span><br><span class="line">        IF v_sdate != v_edate THEN</span><br><span class="line">              dbms_lob.append(v_SQL_DATES,',');<span class="comment">--把临时字符串付给v_str</span></span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        v_sdate := add_months(v_sdate,1);</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span><br><span class="line">    ELSE  <span class="comment">--周和日 类型 都是 DAY</span></span><br><span class="line">      </span><br><span class="line">       v_sdate := to_date(V_START, 'yyyymmdd');</span><br><span class="line">       v_edate := to_date(V_END, 'yyyymmdd');</span><br><span class="line">       V_END_DATE :=  V_END;</span><br><span class="line">       </span><br><span class="line">       IF SUBSTR(V_TYPE,0,1)='d' THEN</span><br><span class="line">            V_START_DATE := to_char(v_sdate, 'yyyymmdd');</span><br><span class="line"></span><br><span class="line">            WHILE (v_sdate &lt;= v_edate) LOOP</span><br><span class="line">                  dbms_lob.append(v_SQL_DATES,to_char(v_sdate, 'yyyymmdd'));<span class="comment">--把临时字符串付给v_str</span></span><br><span class="line">            IF v_sdate != v_edate THEN</span><br><span class="line">                  dbms_lob.append(v_SQL_DATES,',');<span class="comment">--把临时字符串付给v_str</span></span><br><span class="line">            <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">            v_sdate := v_sdate+1;</span><br><span class="line">        </span><br><span class="line">            <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span><br><span class="line">       </span><br><span class="line">       ELSIF SUBSTR(V_TYPE,0,1)='w' THEN</span><br><span class="line"></span><br><span class="line">           <span class="keyword">select</span> to_char(V_Sdate,<span class="string">'d'</span>) <span class="keyword">INTO</span> V_DAY <span class="keyword">from</span> dual;</span><br><span class="line">            IF V_DAY!=2 THEN</span><br><span class="line">             V_Sdate:=V_Sdate-7;</span><br><span class="line">            <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">          V_START_DATE := to_char(v_sdate, 'yyyymmdd');</span><br><span class="line"></span><br><span class="line">          WHILE (v_sdate &lt;= v_edate) LOOP</span><br><span class="line">               <span class="keyword">select</span> to_char(V_Sdate,<span class="string">'d'</span>) <span class="keyword">INTO</span> V_DAY <span class="keyword">from</span> dual;</span><br><span class="line">              IF V_DAY=2 THEN</span><br><span class="line">                 dbms_lob.append(v_SQL_DATES,to_char(v_sdate, 'yyyymmdd'));<span class="comment">--把临时字符串付给v_str</span></span><br><span class="line">                 IF V_Edate-v_sdate &gt;7 THEN</span><br><span class="line">                   dbms_lob.append(v_SQL_DATES,',');<span class="comment">--把临时字符串付给v_str</span></span><br><span class="line">                 <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"></span><br><span class="line">              <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">            v_sdate := v_sdate+1;</span><br><span class="line">           <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">    </span><br><span class="line">    dbms_lob.append(v_sql,'<span class="keyword">SELECT</span> * <span class="keyword">FROM</span>( <span class="keyword">SELECT</span> *</span><br><span class="line">            <span class="keyword">FROM</span> <span class="string">'||V_TABLE||'</span> t</span><br><span class="line">           <span class="keyword">WHERE</span> </span><br><span class="line">                 t.<span class="string">'||V_TABLE_TYPE||'</span> = <span class="string">'''||V_TYPE||'''</span></span><br><span class="line">             <span class="keyword">AND</span> t.<span class="string">'||V_TABLE_DATE||'</span> &gt;= <span class="string">'''||V_START_DATE||'''</span></span><br><span class="line">             <span class="keyword">AND</span> t.<span class="string">'||V_TABLE_DATE||'</span> &lt;= <span class="string">'''||V_END_DATE||'''</span></span><br><span class="line">             <span class="string">'||V_SQLWHERE||'</span>         </span><br><span class="line">             <span class="string">'||V_SQLWHERE_CHANNEL||'</span> ) t1</span><br><span class="line"> </span><br><span class="line">           <span class="keyword">pivot</span>(<span class="keyword">sum</span>(MARKETSHARE)</span><br><span class="line">             <span class="keyword">for</span> <span class="string">'||V_TABLE_DATE||'</span> <span class="keyword">in</span>(<span class="string">');</span></span><br><span class="line"><span class="string">             </span></span><br><span class="line"><span class="string">    dbms_lob.append(v_sql,v_SQL_DATES);</span></span><br><span class="line"><span class="string">    dbms_lob.append(v_sql,'</span>))<span class="string">');</span></span><br><span class="line"><span class="string">    dbms_output.put_line(v_sql);      </span></span><br><span class="line"><span class="string">    OPEN result FOR v_sql;   </span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">       dbms_lob.freetemporary(v_sql);--释放lob</span></span><br><span class="line"><span class="string">       dbms_lob.freetemporary(v_SQL_DATES);--释放lob</span></span><br><span class="line"><span class="string">       --dbms_output.put_line(V_SQLDATE);</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      -- dbms_output.put_line(v_SQL_DATES);</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">--记录操作日志及错误日志</span></span><br><span class="line"><span class="string">END;</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="五、使用Java开发操作CLOB字段"><a href="#五、使用Java开发操作CLOB字段" class="headerlink" title="五、使用Java开发操作CLOB字段"></a>五、使用Java开发操作CLOB字段</h1><h2 id="1-原生JDBC处理CLOB类型"><a href="#1-原生JDBC处理CLOB类型" class="headerlink" title="1. 原生JDBC处理CLOB类型"></a>1. 原生JDBC处理CLOB类型</h2><h3 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h3><blockquote>
+<p>增加，一般会插入一个空的clob到数据库对应的字段,然后锁定该列，用Write将待插入字符串写入进去。</p>
+</blockquote>
+<ul>
+<li>重点：这两步操作要放在同一个事务里面。具体增加的方法如下:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean save(Article article)&#123;</span><br><span class="line">    boolean result = true;</span><br><span class="line">    Connection conn = ConnectionUntils.getInstance();</span><br><span class="line">    String sql = &quot;insert into temp values(?,?,empty_clob())&quot;;</span><br><span class="line">    //锁住该列，防止并发写入时候该字段同时被多次写入造成错误</span><br><span class="line">    String sqlClob = &quot;select temp_clob from temp t where t.name=? for update&quot;;</span><br><span class="line">    PreparedStatement pst =null;</span><br><span class="line">    ResultSet rs = null;</span><br><span class="line">    Writer writer = null;</span><br><span class="line">    try &#123;</span><br><span class="line">        conn.setAutoCommit(false);//设置不自动提交，开启事务</span><br><span class="line">        pst = conn.prepareStatement(sql);</span><br><span class="line">        pst.setString(1,article.getName());</span><br><span class="line">        pst.setString(2,article.getAge());</span><br><span class="line">        pst.executeUpdate();</span><br><span class="line"></span><br><span class="line">        pst= conn.prepareStatement(sqlClob);</span><br><span class="line">        pst.setInt(1, article.getId());</span><br><span class="line"></span><br><span class="line">        rs = pst.executeQuery();</span><br><span class="line">        CLOB clob = null;</span><br><span class="line">        if(rs.next())&#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                clob = (CLOB) rs.getClob(1);</span><br><span class="line">                writer = clob.getCharacterOutputStream(); //拿到clob的字符输入流</span><br><span class="line">                writer.write(article.getContent());</span><br><span class="line">                writer.flush();</span><br><span class="line">                writer.close();</span><br><span class="line">            &#125; catch (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        conn.commit();</span><br><span class="line">    &#125; catch (SQLException e) &#123;</span><br><span class="line">        result = false;</span><br><span class="line">        try &#123;</span><br><span class="line">            conn.rollback();//当commit或者rollback后会自动释放该列的锁定</span><br><span class="line">        &#125; catch (SQLException e1) &#123;</span><br><span class="line">            e1.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        conn.setAutoCommit(true);//还原</span><br><span class="line">        ConnectionUntils.close(rs, pst, conn);</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="update"><a href="#update" class="headerlink" title="update"></a>update</h3><blockquote>
+<p>update操作，update时候主要利用PreparedStatement的setClob方法:</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean update(String name,String content)&#123;</span><br><span class="line">    int result = 0;</span><br><span class="line">    Connection conn = ConnectionUntils.getInstance();</span><br><span class="line">    String sql = &quot;update temp set temp_clob=? where name=?&quot;;</span><br><span class="line">    PreparedStatement pst =null;</span><br><span class="line">    try &#123;</span><br><span class="line">        CLOB clob   = oracle.sql.CLOB.createTemporary(conn, false,oracle.sql.CLOB.DURATION_SESSION);</span><br><span class="line">        clob.setString(1L, content);</span><br><span class="line">        pst = conn.prepareStatement(sql);</span><br><span class="line">        pst.setClob(1, clob);</span><br><span class="line">        pst.setString(2,name);</span><br><span class="line">        result = pst.executeUpdate();</span><br><span class="line">    &#125; catch (SQLException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;finally&#123;</span><br><span class="line">        ConnectionUntils.close(null, pst, conn);</span><br><span class="line">    &#125;</span><br><span class="line">    if(result==0)</span><br><span class="line">        return false;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><blockquote>
+<p>查询就主要是从结果集ResultSet中定位到对应的字段后，往外读：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public Article select(String name)&#123;</span><br><span class="line">    Article article = new Article();</span><br><span class="line">    Connection conn = ConnectionUntils.getInstance();</span><br><span class="line">    String sql = &quot;select name,age,temp_clog from temp where name = ?&quot;;</span><br><span class="line">    PreparedStatement pst =null;</span><br><span class="line">    ResultSet rs = null;</span><br><span class="line">    try &#123;</span><br><span class="line">        pst = conn.prepareStatement(sql);</span><br><span class="line">        pst.setInt(1,id);</span><br><span class="line">        rs = pst.executeQuery();</span><br><span class="line">        StringBuilder builder = new StringBuilder();</span><br><span class="line">        if(rs.next())&#123;</span><br><span class="line">            Clob clob = rs.getClob(&quot;temp_clog&quot;);</span><br><span class="line">            Reader rd = clob.getCharacterStream();</span><br><span class="line">            char [] str = new char[12];</span><br><span class="line">            while(rd.read(str) != -1) &#123;</span><br><span class="line">                builder.append(new String(str));</span><br><span class="line">            &#125;</span><br><span class="line">            article.setContent(builder.toString());</span><br><span class="line">            article.setName(rs.getString(&quot;name&quot;));</span><br><span class="line">            article.setAge(rs.getInt(&quot;age&quot;));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (SQLException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;finally&#123;</span><br><span class="line">        ConnectionUntils.close(rs, pst, conn);</span><br><span class="line">    &#125;</span><br><span class="line">    return article;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-Hibernate、Mybatis框架操作"><a href="#2-Hibernate、Mybatis框架操作" class="headerlink" title="2. Hibernate、Mybatis框架操作"></a>2. Hibernate、Mybatis框架操作</h2><blockquote>
+<p>因为框架都封装集成好了，所以我们使用的时候直接配置变量的类型为CLOB就可以。</p>
+</blockquote>
+<p>譬如：Mybatis</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"temp_clob"</span> <span class="attr">property</span>=<span class="string">"content"</span> <span class="attr">jdbcType</span>=<span class="string">"Clob"</span>  <span class="attr">typeHandler</span>=<span class="string">"org.apache.ibatis.type.ClobTypeHandler"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>貌似Hibernate5内部做了对应的处理，可以直接当string类型一样处理即可。</p>
+<hr>
+<h1 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h1><blockquote>
+<p>虽然CLOB能解决VARCHAR2字符大小的限制，但是我们的DBA们都不建议用这些来处理，可能效率问题吧，大的文件应该放在服务器上，然后Database中存响应地址即可。</p>
+</blockquote>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#数据库">
+    <span class="tag-code">数据库</span>
+  </a>
+
+  <a href="/tags#Oracle">
+    <span class="tag-code">Oracle</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+    
+      <a class="nav-right" href="/2018/11/30/Java反射机制笔记/">
+        
+          Java反射机制笔记
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、Oracle中的varchar2类型"><span class="toc-nav-text">一、Oracle中的varchar2类型</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、Oarcle中的LOB类型"><span class="toc-nav-text">二、Oarcle中的LOB类型</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、DB中使用CLOB类型字段"><span class="toc-nav-text">三、DB中使用CLOB类型字段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-创建表"><span class="toc-nav-text">1. 创建表</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-增删改查"><span class="toc-nav-text">2. 增删改查</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、在存储过程中使用CLOB类型实例"><span class="toc-nav-text">四、在存储过程中使用CLOB类型实例</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#五、使用Java开发操作CLOB字段"><span class="toc-nav-text">五、使用Java开发操作CLOB字段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-原生JDBC处理CLOB类型"><span class="toc-nav-text">1. 原生JDBC处理CLOB类型</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#insert"><span class="toc-nav-text">insert</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#update"><span class="toc-nav-text">update</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#select"><span class="toc-nav-text">select</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-Hibernate、Mybatis框架操作"><span class="toc-nav-text">2. Hibernate、Mybatis框架操作</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#六、总结"><span class="toc-nav-text">六、总结</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://jiaohongwei.github.io/2017/08/18/Oracle-CLOB-笔记/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "jiaohongwei";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "Oracle CLOB 笔记",
+        owner: "jiaohongwei",
+        repo: "jiaohongwei.github.io",
+        oauth: {
+          client_id: "2ac0968c10be35494f4b",
+          client_secret: "e8afa8b7adbeb92905f17b646db578138e5c2bde"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'false';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
