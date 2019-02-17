@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="hongwei&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Git 常用命令 | Hongwei&#39;s Diary
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/css/plugins/gitment.css">
+  
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hongwei's Diary</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="https://github.com/JiaoHongwei" class="item-link">GitHub</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="https://github.com/JiaoHongwei" class="menu-link">GitHub</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Git 常用命令</h2>
+  <p class="post-date">2016-11-08</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><blockquote>
+<p>按照使用频率排序，建议记住前十个常用的Git 命令。</p>
+</blockquote>
+<hr>
+<h2 id="git-clone"><a href="#git-clone" class="headerlink" title="git clone"></a>git clone</h2><blockquote>
+<p>获取一个url对应的远程Git repo, 创建一个local copy.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone [url]   //下载一个项目和它的整个代码历史</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span># git status</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;</span> 查询repo的状态. -s表示short, -s的输出标记会有两列,第一列是对staging区域而言,第二列是对working目录而言.</span><br><span class="line">  </span><br><span class="line">```shell    </span><br><span class="line">git status -s       //显示有变更的文件</span><br></pre></td></tr></table></figure>
+<h2 id="git-add"><a href="#git-add" class="headerlink" title="git add"></a>git add</h2><blockquote>
+<p>在提交之前,Git有一个暂存区(staging area),可以放入新添加的文件或者加入新的改动. commit时提交的改动是上一次加入到staging area中的改动,而不是我们disk上的改动.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add &lt;file&gt;　　  //把单一指定文件加入至暂存区（须加后缀格式）</span><br><span class="line"></span><br><span class="line">//大批量 增、删、改文件：</span><br><span class="line">git add -A          //暂存区与工作区保持一致（stages All）</span><br><span class="line">git add .           //暂存区新建文件及更改文件（stages new and modified, without deleted）</span><br><span class="line">git add -u          //暂存区删除文件及更改文件（stages modified and deleted, without new）</span><br></pre></td></tr></table></figure>
+<h2 id="git-commit"><a href="#git-commit" class="headerlink" title="git commit"></a>git commit</h2><blockquote>
+<p>提交已经被add进来的改动.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git commot -m "&lt;message&gt;"　　 //把暂存区的所有修改提交到分支，须输入描述信息</span><br><span class="line">git commot --amend　　　　    //更改之前一次commit的描述信息</span><br><span class="line">git commot -a -m "&lt;message&gt;"　//把暂存区的所有被修改或者已删除的且已经被git管理的文档提交提交到分支，须输入描述信息（可省略 git add 过程）</span><br></pre></td></tr></table></figure>
+<h2 id="git-config"><a href="#git-config" class="headerlink" title="git config"></a>git config</h2><blockquote>
+<p>Git的设置文件为.gitconfig，它可以在用户主目录下（全局配置），也可以在项目目录下（项目配置）。。</p>
+</blockquote>
+ <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config --list              //显示当前的git配置</span><br><span class="line">git config -e [--global]       //编辑Git配置文件</span><br><span class="line">git config [--global] user.name "[name]"             // 设置提交代码时的用户名</span><br><span class="line">git config [--global] user.email "[email address]"   // 设置提交代码时的邮箱地址</span><br></pre></td></tr></table></figure>
+<h2 id="git-remote"><a href="#git-remote" class="headerlink" title="git remote"></a>git remote</h2><blockquote>
+<p>远程仓库操作</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git remote -v                   //显示所有远程仓库</span><br><span class="line">git remote show [remote]        //显示某个远程仓库的信息</span><br><span class="line">git remote add [shortname] [url]      //增加一个新的远程仓库，并命名</span><br></pre></td></tr></table></figure>
+<h2 id="git-pull"><a href="#git-pull" class="headerlink" title="git pull"></a>git pull</h2><blockquote>
+<p>git pull会首先执行git fetch,然后执行git merge,把取来的分支的head merge到当前分支.这个merge操作会产生一个新的commit.</p>
+</blockquote>
+<blockquote>
+<p>pull == fetch + merge FETCH_HEAD</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull [remote] [branch]      //取回远程仓库的变化，并与本地分支合并</span><br></pre></td></tr></table></figure>
+<h2 id="git-push"><a href="#git-push" class="headerlink" title="git push"></a>git push</h2><blockquote>
+<p>push your new branches and data to a remote repository.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push [remote] [branch]          // 上传本地指定分支到远程仓库</span><br><span class="line">git push [remote] --force           // 强行推送当前分支到远程仓库，即使有冲突</span><br><span class="line">git push [remote] --all             // 推送所有分支到远程仓库</span><br></pre></td></tr></table></figure>
+<h2 id="git-merge"><a href="#git-merge" class="headerlink" title="git merge"></a>git merge</h2><blockquote>
+<p>把一个分支merge进当前的分支. 如果出现冲突,需要手动修改,可以用git mergetool. 解决冲突的时候可以用到git diff,解决完之后用git add添加,即表示冲突已经被resolved.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git merge [branch]                  // 合并指定分支到当前分支</span><br></pre></td></tr></table></figure>
+<h2 id="git-init"><a href="#git-init" class="headerlink" title="git init"></a>git init</h2><blockquote>
+<p>在本地新建一个repo</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git init                        // 在当前目录新建一个Git代码库</span><br><span class="line">git init [project-name]         // 新建一个目录，将其初始化为Git代码库</span><br></pre></td></tr></table></figure>
+<h2 id="git-tag"><a href="#git-tag" class="headerlink" title="git tag"></a>git tag</h2><blockquote>
+<p>会在一个提交上建立永久性的书签,通常是发布一个release版本或者ship了什么东西之后加tag.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git tag                     //  列出所有tag</span><br><span class="line">git tag [tag]               //新建一个tag在当前commit</span><br><span class="line">git tag [tag] [commit]      //新建一个tag在指定commit</span><br><span class="line">git tag -d [tag]            //删除本地tag</span><br><span class="line">git push origin :refs/tags/[tagName]        //  删除远程tag</span><br><span class="line">git show [tag]              //查看tag信息</span><br></pre></td></tr></table></figure>
+<h2 id="git-log"><a href="#git-log" class="headerlink" title="git log"></a>git log</h2><blockquote>
+<p>show commit history of a branch.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git log                        //显示当前分支的版本历史</span><br><span class="line">git log --stat                 //显示commit历史，以及每次commit发生变更的文件</span><br><span class="line">git log -S [keyword]           //搜索提交历史，根据关键词</span><br><span class="line"></span><br><span class="line">git log --follow [file]</span><br><span class="line">git whatchanged [file]          //显示某个文件的版本历史，包括文件改名</span><br><span class="line"></span><br><span class="line">git log -p [file]               //显示指定文件相关的每一次diff</span><br><span class="line">git log -5 --pretty --oneline   //显示过去5次提交</span><br><span class="line">git shortlog -sn                //显示所有提交过的用户，按提交次数排序</span><br><span class="line">git blame [file]                //显示指定文件是什么人在什么时间修改过</span><br><span class="line"></span><br><span class="line">git log [tag] HEAD --pretty=format:%s  //显示某个commit之后的所有变动，每个commit占据一行</span><br><span class="line">git log [tag] HEAD --grep feature       //显示某个commit之后的所有变动，其"提交说明"必须符合搜索条件</span><br></pre></td></tr></table></figure>
+<h2 id="git-diff"><a href="#git-diff" class="headerlink" title="git diff"></a>git diff</h2><blockquote>
+<p>show diff of unstaged changes.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git diff                            // 显示暂存区和工作区的差异</span><br><span class="line">git diff --cached [file]            // 显示暂存区和上一个commit的差异</span><br><span class="line">git diff HEAD                       //显示工作区与当前分支最新commit之间的差异</span><br><span class="line">git diff [first-branch]...[second-branch]           //显示两次提交之间的差异</span><br><span class="line">git diff --shortstat "@&#123;0 day ago&#125;"                 //显示今天你写了多少行代码</span><br></pre></td></tr></table></figure>
+<h2 id="git-reset"><a href="#git-reset" class="headerlink" title="git reset"></a>git reset</h2><blockquote>
+<p>undo changes and commits.</p>
+</blockquote>
+<blockquote>
+<p>这里的HEAD关键字指的是当前分支最末梢最新的一个提交.也就是版本库中该分支上的最新版本.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git reset [file]        //重置暂存区的指定文件，与上一次commit保持一致，但工作区不变</span><br><span class="line">git reset --hard        //重置暂存区与工作区，与上一次commit保持一致</span><br><span class="line">git reset [commit]      //重置当前分支的指针为指定commit，同时重置暂存区，但工作区不变</span><br><span class="line"></span><br><span class="line">git reset --hard [commit]   //重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致</span><br><span class="line">git reset --keep [commit]   //重置当前HEAD为指定commit，但保持暂存区和工作区不变</span><br></pre></td></tr></table></figure>
+<h2 id="git-revert"><a href="#git-revert" class="headerlink" title="git revert"></a>git revert</h2><blockquote>
+<p>反转撤销提交.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git revert [commit]   //新建一个commit，用来撤销指定commit,后者的所有变化都将被前者抵消，并且应用到当前分支</span><br></pre></td></tr></table></figure>
+<h2 id="git-rm"><a href="#git-rm" class="headerlink" title="git rm"></a>git rm</h2><blockquote>
+<p>移除文件</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git rm [file1] [file2] ...          // 删除工作区文件，并且将这次删除放入暂存区</span><br><span class="line">git rm --cached [file]              // 停止追踪指定文件，但该文件会保留在工作区</span><br></pre></td></tr></table></figure>
+<h2 id="git-mv"><a href="#git-mv" class="headerlink" title="git mv"></a>git mv</h2><blockquote>
+<p>移动文件</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git mv [file-original] [file-renamed]          //改名文件，并且将这个改名放入暂存区</span><br></pre></td></tr></table></figure>
+<h2 id="git-stash"><a href="#git-stash" class="headerlink" title="git stash"></a>git stash</h2><blockquote>
+<p>把当前的改动压入一个栈.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git stash list          //会显示这个栈的list.</span><br><span class="line">git stash apply          //取出stash中的上一个项目(stash@&#123;0&#125;),并且应用于当前的工作目录.</span><br><span class="line"></span><br><span class="line">git stash drop          //删除上一个,也可指定参数删除指定的一个项目.</span><br><span class="line">git stash clear         // 删除所有项目.</span><br></pre></td></tr></table></figure>
+<h2 id="git-branch"><a href="#git-branch" class="headerlink" title="git branch"></a>git branch</h2><blockquote>
+<p>列出分支,创建分支和删除分支.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git branch        // 列出所有本地分支</span><br><span class="line">git branch -r     // 列出所有远程分支</span><br><span class="line">git branch -a     //列出所有本地分支和远程分支</span><br><span class="line"></span><br><span class="line">git checkout [branch-name]      //切换到指定分支，并更新工作区</span><br><span class="line"></span><br><span class="line">git branch [branch-name]        //新建一个分支，但依然停留在当前分支</span><br><span class="line">git checkout -b [branch]        // 新建一个分支，并切换到该分支</span><br><span class="line">git branch [branch] [commit]    //新建一个分支，指向指定commit</span><br><span class="line"></span><br><span class="line">git branch --track [branch] [remote-branch]         //新建一个分支，与指定的远程分支建立追踪关系</span><br><span class="line">git branch --<span class="built_in">set</span>-upstream [branch] [remote-branch]  //建立追踪关系，在现有分支与指定的远程分支之间</span><br></pre></td></tr></table></figure>
+<h2 id="git-fetch"><a href="#git-fetch" class="headerlink" title="git fetch"></a>git fetch</h2><blockquote>
+<p>download new branches and data from a remote repository.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git fetch [remote]          // 下载远程仓库的所有变动</span><br></pre></td></tr></table></figure></section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Git">
+    <span class="tag-code">Git</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+    
+      <a class="nav-right" href="/2016/12/02/Maven手动安装Orcal驱动/">
+        
+          Maven手动安装Orcal驱动
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-clone"><span class="toc-nav-text">git clone</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-add"><span class="toc-nav-text">git add</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-commit"><span class="toc-nav-text">git commit</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-config"><span class="toc-nav-text">git config</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-remote"><span class="toc-nav-text">git remote</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-pull"><span class="toc-nav-text">git pull</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-push"><span class="toc-nav-text">git push</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-merge"><span class="toc-nav-text">git merge</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-init"><span class="toc-nav-text">git init</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-tag"><span class="toc-nav-text">git tag</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-log"><span class="toc-nav-text">git log</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-diff"><span class="toc-nav-text">git diff</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-reset"><span class="toc-nav-text">git reset</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-revert"><span class="toc-nav-text">git revert</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-rm"><span class="toc-nav-text">git rm</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-mv"><span class="toc-nav-text">git mv</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-stash"><span class="toc-nav-text">git stash</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-branch"><span class="toc-nav-text">git branch</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git-fetch"><span class="toc-nav-text">git fetch</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://jiaohongwei.github.io/2016/11/08/Git-常用命令/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "jiaohongwei";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "Git 常用命令",
+        owner: "jiaohongwei",
+        repo: "jiaohongwei.github.io",
+        oauth: {
+          client_id: "2ac0968c10be35494f4b",
+          client_secret: "e8afa8b7adbeb92905f17b646db578138e5c2bde"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'false';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

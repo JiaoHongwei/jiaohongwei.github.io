@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="hongwei&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      服务器部署Spring Boot .jar包应用 | Hongwei&#39;s Diary
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/css/plugins/gitment.css">
+  
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hongwei's Diary</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="https://github.com/JiaoHongwei" class="item-link">GitHub</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="https://github.com/JiaoHongwei" class="menu-link">GitHub</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>服务器部署Spring Boot .jar包应用</h2>
+  <p class="post-date">2018-11-20</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><blockquote>
+<p>介绍常见的jar包应用在Linux服务器部署规范</p>
+</blockquote>
+<hr>
+<h1 id="一、jar包提取出来maven打包（避免每次重复打相同的jar包）"><a href="#一、jar包提取出来maven打包（避免每次重复打相同的jar包）" class="headerlink" title="一、jar包提取出来maven打包（避免每次重复打相同的jar包）"></a>一、jar包提取出来maven打包（避免每次重复打相同的jar包）</h1><blockquote>
+<p>pom.xml配置如下</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">finalName</span>&gt;</span>xxx<span class="tag">&lt;/<span class="name">finalName</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">layout</span>&gt;</span>ZIP<span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">includes</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>nothing<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>nothing<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">include</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">includes</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">attach</span>&gt;</span>false<span class="tag">&lt;/<span class="name">attach</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-dependency-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">id</span>&gt;</span>copy-dependencies<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">phase</span>&gt;</span>package<span class="tag">&lt;/<span class="name">phase</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">goal</span>&gt;</span>copy-dependencies<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">type</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">includeTypes</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">includeTypes</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">includeScope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">includeScope</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">outputDirectory</span>&gt;</span>$&#123;project.build.directory&#125;/lib<span class="tag">&lt;/<span class="name">outputDirectory</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="二、常用Linux命令"><a href="#二、常用Linux命令" class="headerlink" title="二、常用Linux命令"></a>二、常用Linux命令</h1><ul>
+<li>打包：<code>mvn clean package -DskipTests</code></li>
+<li>运行：<code>nohup java -jar xxx.jar &gt;./logs/xxx.log 2&gt;&amp;1 &amp;</code></li>
+<li>查询：<code>jps -l | grep xxx.jar</code></li>
+<li>关闭：<code>kill -9 pid</code></li>
+</ul>
+<hr>
+<h1 id="三、启动脚本startup-sh"><a href="#三、启动脚本startup-sh" class="headerlink" title="三、启动脚本startup.sh"></a>三、启动脚本startup.sh</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># !/bin/bash</span></span><br><span class="line">JAVA_HOME=<span class="string">"/opt/jvm/jdk1.8.0_141"</span></span><br><span class="line">APP_HOME=<span class="string">"/data/Project/backend"</span></span><br><span class="line">APP_LOG=<span class="string">"<span class="variable">$APP_HOME</span>/logs"</span></span><br><span class="line">APP_LIBS=<span class="string">"<span class="variable">$APP_HOME</span>/libs"</span></span><br><span class="line">APP_MAIN=<span class="string">"xxx.jar"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># JVM启动参数</span></span><br><span class="line"><span class="comment"># -server：一定要作为第一个参数，多个CPU时性能佳</span></span><br><span class="line"><span class="comment"># -Xloggc：记录GC日志，建议写成绝对路径，如此便可在任意目录下执行该shell脚本</span></span><br><span class="line"><span class="comment">#JAVA_OPTS="-server -Xms1048m -Xmx1048m -Xloggc:$APP_HOME/logs/gc.log"</span></span><br><span class="line">JAVA_OPTS=<span class="string">"-server -Xms1048m -Xmx1048m"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载依赖到classpath</span></span><br><span class="line"><span class="comment">#for lib in $&#123;APP_HOME&#125;/libs/*.jar;</span></span><br><span class="line"><span class="comment">#   do CLASSPATH=$&#123;lib&#125;:"$&#123;CLASSPATH&#125;";</span></span><br><span class="line"><span class="comment">#done</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#for setting in $&#123;APP_HOME&#125;/config/*.setting;</span></span><br><span class="line"><span class="comment">#   do CLASSPATH=config/$&#123;setting##*/&#125;:"$&#123;CLASSPATH&#125;";</span></span><br><span class="line"><span class="comment">#done</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#CLASSPATH=log4j.properties:"$&#123;CLASSPATH&#125;"</span></span><br><span class="line"><span class="comment">#CLASSPATH=$&#123;CLASSPATH&#125;:.:$&#123;APP_HOME&#125;/dailyload.jar</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化参数</span></span><br><span class="line"><span class="comment">#if [ -n "$1" ] ;</span></span><br><span class="line"><span class="comment">#then</span></span><br><span class="line"><span class="comment">#   dt=$1</span></span><br><span class="line"><span class="comment">#   if ! (echo $dt | grep -Eq "[0-9]&#123;4&#125;-[0-9]&#123;2&#125;-[0-9]&#123;2&#125;" &amp;&amp; date -d $dt +%Y%m%d &gt;/dev/null 2&gt;&amp;1;)</span></span><br><span class="line"><span class="comment">#   then</span></span><br><span class="line"><span class="comment">#       echo "param can not convert to date : $dt"</span></span><br><span class="line"><span class="comment">#       exit 1</span></span><br><span class="line"><span class="comment">#   fi</span></span><br><span class="line"><span class="comment">#else</span></span><br><span class="line"><span class="comment">#   dt=`date -d "0 days ago" "+%Y-%m-%d"`</span></span><br><span class="line"><span class="comment">#fi</span></span><br><span class="line"></span><br><span class="line">args=<span class="string">"$*"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化进程ID（0表示未启动）</span></span><br><span class="line">pid=0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取Java应用的PID</span></span><br><span class="line"><span class="function"><span class="title">getPID</span></span>()&#123;</span><br><span class="line">    javaps=`<span class="variable">$JAVA_HOME</span>/bin/jps -l | grep <span class="variable">$APP_MAIN</span>`</span><br><span class="line">    <span class="keyword">if</span> [ -n <span class="string">"<span class="variable">$javaps</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        pid=`<span class="built_in">echo</span> <span class="variable">$javaps</span> | awk <span class="string">'&#123;print $1&#125;'</span>`</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        pid=0</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动Java应用程序</span></span><br><span class="line"><span class="comment"># ------------------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># 1、调用getPID()函数，刷新$pid全局变量</span></span><br><span class="line"><span class="comment"># 2、若程序已经启动（$pid不等于0），则提示程序已启动</span></span><br><span class="line"><span class="comment"># 3、若程序未被启动，则执行启动命令</span></span><br><span class="line"><span class="comment"># 4、启动命令执行后，再次调用getPID()函数</span></span><br><span class="line"><span class="comment"># 5、若步骤4执行后，程序的PID不等于0，则打印Success，反之打印Failed</span></span><br><span class="line"><span class="comment"># 注意：[echo -n]表示打印字符后不换行</span></span><br><span class="line"><span class="comment"># 注意：[nohup command &gt; /path/nohup.log &amp;]是将作业输出到nohup.log，否则它会输出到该脚本目录下的nohup.out中</span></span><br><span class="line"><span class="comment"># ------------------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">startup</span></span>()&#123;</span><br><span class="line">    getPID</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$pid</span> -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"<span class="variable">$APP_MAIN</span> already started(PID=<span class="variable">$pid</span>)"</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> -n <span class="string">"Starting <span class="variable">$APP_MAIN</span>"</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">#方式1 可执行jar包(jar的MANIFEST.MF文件已指定主函数和依赖)</span></span><br><span class="line">        <span class="comment">#nohup $JAVA_HOME/bin/java $JAVA_OPTS -jar dailyload.jar $dt &gt; $APP_LOG/nohup.log &amp;</span></span><br><span class="line">        nohup java -Dloader.path=<span class="variable">$APP_LIBS</span> -jar <span class="variable">$APP_HOME</span>/xxx.jar &gt; /dev/null &amp;</span><br><span class="line"></span><br><span class="line">        <span class="comment">#方式2 不可执行jar包(需自己加载依赖到classpath)</span></span><br><span class="line">        <span class="comment">#nohup $JAVA_HOME/bin/java $JAVA_OPTS -Dfile.encoding=UTF-8 -classpath $CLASSPATH $APP_MAIN $args &gt; $APP_LOG/nohup.log &amp;</span></span><br><span class="line">        <span class="comment">#nohup $JAVA_HOME/bin/java $JAVA_OPTS -Dfile.encoding=UTF-8 -classpath $CLASSPATH $APP_MAIN $args &gt; /dev/null &amp;</span></span><br><span class="line"></span><br><span class="line">        getPID</span><br><span class="line">        <span class="keyword">if</span> [ <span class="variable">$pid</span> -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">"(PID=<span class="variable">$pid</span>)...[Success]"</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">"[Failed]"</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动</span></span><br><span class="line">startup</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="四、查询状态脚本-status-sh"><a href="#四、查询状态脚本-status-sh" class="headerlink" title="四、查询状态脚本 status.sh"></a>四、查询状态脚本 status.sh</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># !/bin/bash</span></span><br><span class="line"></span><br><span class="line">APP_HOME=/data/Project/backend</span><br><span class="line">APP_MAIN=xxx.jar</span><br><span class="line"></span><br><span class="line">pid=0</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">getPID</span></span>()&#123;</span><br><span class="line">   javaps=`<span class="variable">$JAVA_HOME</span>/bin/jps -l | grep <span class="variable">$APP_MAIN</span>`</span><br><span class="line">   <span class="keyword">if</span> [ -n <span class="string">"<span class="variable">$javaps</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">      pid=`<span class="built_in">echo</span> <span class="variable">$javaps</span> | awk <span class="string">'&#123;print $1&#125;'</span>`</span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">      pid=0</span><br><span class="line">   <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">getServerStatus</span></span>()&#123;</span><br><span class="line">   getPID</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">   <span class="keyword">if</span> [ <span class="variable">$pid</span> -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"<span class="variable">$APP_MAIN</span> is running(PID=<span class="variable">$pid</span>)"</span></span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"<span class="variable">$APP_MAIN</span> is not running"</span></span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">   <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">getServerStatus</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="五、关闭程序脚本-shutdown-sh"><a href="#五、关闭程序脚本-shutdown-sh" class="headerlink" title="五、关闭程序脚本 shutdown.sh"></a>五、关闭程序脚本 shutdown.sh</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># !/bin/bash</span></span><br><span class="line"></span><br><span class="line">APP_HOME=/data/Project/backend/</span><br><span class="line">APP_MAIN=xxx.jar</span><br><span class="line"></span><br><span class="line">pid=0</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">getPID</span></span>()&#123;</span><br><span class="line">   javaps=`<span class="variable">$JAVA_HOME</span>/bin/jps -l | grep <span class="variable">$APP_MAIN</span>`</span><br><span class="line">   <span class="keyword">if</span> [ -n <span class="string">"<span class="variable">$javaps</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">      pid=`<span class="built_in">echo</span> <span class="variable">$javaps</span> | awk <span class="string">'&#123;print $1&#125;'</span>`</span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">      pid=0</span><br><span class="line">   <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止Java应用程序</span></span><br><span class="line"><span class="comment"># ------------------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># 1、调用getPID()函数，刷新$pid全局变量</span></span><br><span class="line"><span class="comment"># 2、若程序已经启动（$pid不等于0），则开始执行停止程序操作，否则提示程序未运行</span></span><br><span class="line"><span class="comment"># 3、使用[kill -9 PID]命令强制杀掉进程</span></span><br><span class="line"><span class="comment"># 4、使用[$?]获取上一句命令的返回值，若其为0，表示程序已停止运行，则打印Success，反之打印Failed</span></span><br><span class="line"><span class="comment"># 5、为防止Java程序被启动多次，这里增加了反复检查程序进程的功能，通过递归调用shutdown()函数的方式，反复kill</span></span><br><span class="line"><span class="comment"># 注意：Shell编程中，[$?]表示上一句命令或者上一个函数的返回值</span></span><br><span class="line"><span class="comment"># ------------------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">shutdown</span></span>()&#123;</span><br><span class="line">   getPID</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">   <span class="keyword">if</span> [ <span class="variable">$pid</span> -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">      <span class="built_in">echo</span> -n <span class="string">"Stopping <span class="variable">$APP_MAIN</span>(PID=<span class="variable">$pid</span>)..."</span></span><br><span class="line">      <span class="built_in">kill</span> -9 <span class="variable">$pid</span></span><br><span class="line">      <span class="keyword">if</span> [ $? -eq 0 ]; <span class="keyword">then</span></span><br><span class="line">         <span class="built_in">echo</span> <span class="string">"[Success]"</span></span><br><span class="line">         <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">         <span class="built_in">echo</span> <span class="string">"[Failed]"</span></span><br><span class="line">         <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">      <span class="keyword">fi</span></span><br><span class="line">      getPID</span><br><span class="line">      <span class="keyword">if</span> [ <span class="variable">$pid</span> -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">         shutdown</span><br><span class="line">      <span class="keyword">fi</span></span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"<span class="variable">$APP_MAIN</span> is not running"</span></span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"==============================================================================================="</span></span><br><span class="line">   <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">shutdown</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="六、源码文件"><a href="#六、源码文件" class="headerlink" title="六、源码文件"></a>六、源码文件</h1><ul>
+<li>完整源码： <a href="https://github.com/JiaoHongwei/Spring-Boot-Demos/tree/master/shell" target="_blank" rel="noopener">Spring-Boot-Demos/shell</a></li>
+</ul>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Spring Boot">
+    <span class="tag-code">Spring Boot</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2017/08/18/Linux-cp-rm-mv强制覆盖/">
+        <span class="nav-arrow">← </span>
+        
+          Linux cp/rm/mv强制覆盖
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/11/30/Java反射机制笔记/">
+        
+          Java反射机制笔记
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、jar包提取出来maven打包（避免每次重复打相同的jar包）"><span class="toc-nav-text">一、jar包提取出来maven打包（避免每次重复打相同的jar包）</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、常用Linux命令"><span class="toc-nav-text">二、常用Linux命令</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、启动脚本startup-sh"><span class="toc-nav-text">三、启动脚本startup.sh</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、查询状态脚本-status-sh"><span class="toc-nav-text">四、查询状态脚本 status.sh</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#五、关闭程序脚本-shutdown-sh"><span class="toc-nav-text">五、关闭程序脚本 shutdown.sh</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#六、源码文件"><span class="toc-nav-text">六、源码文件</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://jiaohongwei.github.io/2018/11/20/服务器部署Spring-Boot-jar包应用/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "jiaohongwei";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "服务器部署Spring Boot .jar包应用",
+        owner: "jiaohongwei",
+        repo: "jiaohongwei.github.io",
+        oauth: {
+          client_id: "2ac0968c10be35494f4b",
+          client_secret: "e8afa8b7adbeb92905f17b646db578138e5c2bde"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'false';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

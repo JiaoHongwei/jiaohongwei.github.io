@@ -10,7 +10,7 @@
   
   <title>
     
-      Linux cp/rm/mv强制覆盖 | Hongwei&#39;s Diary
+      Maven手动安装Orcal驱动 | Hongwei&#39;s Diary
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -156,8 +156,8 @@
 </header>
 
     <div id="article-banner">
-  <h2>Linux cp/rm/mv强制覆盖</h2>
-  <p class="post-date">2017-08-18</p>
+  <h2>Maven手动安装Orcal驱动</h2>
+  <p class="post-date">2016-12-02</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -166,35 +166,32 @@
   <!-- Article START -->
   <article class="post-article">
     <section class="markdown-content"><blockquote>
-<p>本文记述Linux下的cp/rm/mv强制覆盖以及在Java中的调用（博客园文章迁移）</p>
+<p>由于Oracle授权问题，Maven3不提供Oracle JDBC driver，为了在Maven项目中应用Oracle JDBC driver,必须手动添加到本地仓库。</p>
 </blockquote>
-<h1 id="一、Linux下的cp-rm-mv强制覆盖"><a href="#一、Linux下的cp-rm-mv强制覆盖" class="headerlink" title="一、Linux下的cp/rm/mv强制覆盖"></a>一、Linux下的cp/rm/mv强制覆盖</h1><h2 id="1-反斜杠（-）临时取消别名"><a href="#1-反斜杠（-）临时取消别名" class="headerlink" title="1. 反斜杠（\）临时取消别名"></a>1. 反斜杠（\）临时取消别名</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# \cp filename new/filename   </span><br><span class="line">[root@fz ~]#</span><br></pre></td></tr></table></figure>
-<h2 id="2-unalias-取消别名"><a href="#2-unalias-取消别名" class="headerlink" title="2. unalias 取消别名"></a>2. unalias 取消别名</h2><blockquote>
-<p>注意：这只是临时取消cp的别名，不是永久的</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]# unalias cp   </span><br><span class="line">[root@localhost ~]# cp filename new/filename   </span><br><span class="line">[root@localhost ~]#</span><br></pre></td></tr></table></figure>
-<h2 id="3-修改默认配置文件"><a href="#3-修改默认配置文件" class="headerlink" title="3. 修改默认配置文件"></a>3. 修改默认配置文件</h2><blockquote>
-<p>输入alias命令，看到系统内部使用的是cp、mv、rm -i 所以怎么输入都是提示覆盖。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]#</span><br><span class="line">[root@fz ~]# alias</span><br><span class="line">alias cdd=&apos;cd /home/data/android/&apos;</span><br><span class="line">alias cp=&apos;cp -i&apos;</span><br><span class="line">alias l=&apos;ls -la&apos;</span><br><span class="line">alias l.=&apos;ls -d .* --color=auto&apos;</span><br><span class="line">alias ll=&apos;ls -l --color=auto&apos;</span><br><span class="line">alias ls=&apos;ls --color=auto&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">alias tf=&apos;tail -f &apos;</span><br><span class="line">alias vc=&apos;vim ~/.bash_profile&apos;</span><br><span class="line">alias vs=&apos;source ~/.bash_profile&apos;</span><br><span class="line">alias which=&apos;alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde&apos;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>修改 ~/.bashrc ，在 “alias cp=’cp -i’ ”前添加<code>#</code>号注释后即可。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz test]# vi ~/.bashrc </span><br><span class="line"># .bashrc</span><br><span class="line"></span><br><span class="line"># User specific aliases and functions</span><br><span class="line"></span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">#alias cp=&apos;cp -i&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line"></span><br><span class="line"># Source global definitions</span><br><span class="line">if [ -f /etc/bashrc ]; then</span><br><span class="line">        . /etc/bashrc</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>重启或者执行 source ~/.bashrc 让命令生效</p>
-</blockquote>
-<h2 id="4-yes指令-管道-自动输入yes"><a href="#4-yes指令-管道-自动输入yes" class="headerlink" title="4. yes指令+管道 自动输入yes"></a>4. yes指令+管道 自动输入yes</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# yes | cp filename new/filename   </span><br><span class="line">cp: overwrite `new/filename&apos;? [root@localhost ~]#</span><br></pre></td></tr></table></figure>
-<hr>
-<h1 id="二、Java后台调用Linux命令实现"><a href="#二、Java后台调用Linux命令实现" class="headerlink" title="二、Java后台调用Linux命令实现"></a>二、Java后台调用Linux命令实现</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void copyIcon() throws IOException, InterruptedException &#123;</span><br><span class="line">      Runtime r = Runtime.getRuntime();</span><br><span class="line">      String cmd_copy = &quot;\\cp -rf temp/AppIcon/*  icon/&quot;;    //copy并覆盖</span><br><span class="line">      String[] cmds = new String[]&#123;&quot;sh&quot;,&quot;-c&quot;,cmd_copy&#125;;</span><br><span class="line">      Process p = r.exec(cmds);</span><br><span class="line">      int result = p.waitFor();</span><br><span class="line">      if (result == 0)&#123;   //表示正常结束</span><br><span class="line">          logger.error(&quot;【copy appIcon 成功】&quot;);</span><br><span class="line">      &#125;else &#123;</span><br><span class="line">          logger.error(&quot;【copy appIcon 失败】&quot;+cmd_copy);</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="一、获取Oracle-JDBC-Driver"><a href="#一、获取Oracle-JDBC-Driver" class="headerlink" title="一、获取Oracle JDBC Driver"></a>一、获取Oracle JDBC Driver</h1><ul>
+<li>通过Oracle官方网站下载相应版本：<a href="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html</a></li>
+<li>通过Oracle的安装目录获得，位置在“{ORACLE_HOME}\jdbc\lib\ojdbc6.jar”</li>
+</ul>
+<h1 id="二、安装驱动"><a href="#二、安装驱动" class="headerlink" title="二、安装驱动"></a>二、安装驱动</h1><ol>
+<li>将ojdbc6.jar 文件放在主项目路径下</li>
+<li><p>执行命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.1.0 -Dpackaging=jar -Dfile=ojdbc6.jar</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加pom引用</p>
+ <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.oracle<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ojdbc6<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>11.2.0.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
 </section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#Linux">
-    <span class="tag-code">Linux</span>
+  <a href="/tags#Maven">
+    <span class="tag-code">Maven</span>
+  </a>
+
+  <a href="/tags#Java高级编程">
+    <span class="tag-code">Java高级编程</span>
   </a>
 
       </div>
@@ -205,17 +202,17 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2017/08/18/Oracle-CLOB-笔记/">
+      <a class="nav-left" href="/2016/11/08/Git-常用命令/">
         <span class="nav-arrow">← </span>
         
-          Oracle CLOB 笔记
+          Git 常用命令
         
       </a>
     
     
-      <a class="nav-right" href="/2018/11/20/服务器部署Spring-Boot-jar包应用/">
+      <a class="nav-right" href="/2017/03/06/Java-Socket编程/">
         
-          服务器部署Spring Boot .jar包应用
+          Java Socket编程【转】
         
         <span class="nav-arrow"> →</span>
       </a>
@@ -264,7 +261,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、Linux下的cp-rm-mv强制覆盖"><span class="toc-nav-text">一、Linux下的cp/rm/mv强制覆盖</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-反斜杠（-）临时取消别名"><span class="toc-nav-text">1. 反斜杠（\）临时取消别名</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-unalias-取消别名"><span class="toc-nav-text">2. unalias 取消别名</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-修改默认配置文件"><span class="toc-nav-text">3. 修改默认配置文件</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-yes指令-管道-自动输入yes"><span class="toc-nav-text">4. yes指令+管道 自动输入yes</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、Java后台调用Linux命令实现"><span class="toc-nav-text">二、Java后台调用Linux命令实现</span></a></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、获取Oracle-JDBC-Driver"><span class="toc-nav-text">一、获取Oracle JDBC Driver</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、安装驱动"><span class="toc-nav-text">二、安装驱动</span></a></li></ol>
     
   </div>
 </aside>
@@ -274,7 +271,7 @@
 
 <script>
   (function () {
-    var url = 'https://jiaohongwei.github.io/2017/08/18/Linux-cp-rm-mv强制覆盖/';
+    var url = 'https://jiaohongwei.github.io/2016/12/02/Maven手动安装Orcal驱动/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -336,7 +333,7 @@
     var gitmentConfig = "jiaohongwei";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "Linux cp/rm/mv强制覆盖",
+        id: "Maven手动安装Orcal驱动",
         owner: "jiaohongwei",
         repo: "jiaohongwei.github.io",
         oauth: {
