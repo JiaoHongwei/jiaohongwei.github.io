@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="hongwei&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      开放API接口安全处理 | Hongwei&#39;s Diary
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/css/plugins/gitment.css">
+  
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hongwei's Diary</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="https://github.com/JiaoHongwei" class="item-link">GitHub</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="https://github.com/JiaoHongwei" class="menu-link">GitHub</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>开放API接口安全处理</h2>
+  <p class="post-date">2018-12-10</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><blockquote>
+<p>本文记述开放API接口安全处理策略（有道云笔记迁移）</p>
+</blockquote>
+<h1 id="一、开放API接口定义"><a href="#一、开放API接口定义" class="headerlink" title="一、开放API接口定义"></a>一、开放API接口定义</h1><blockquote>
+<p>顾名思义，开放出来给其他人调用的API接口就是开放API接口。例如，短信接口、邮件接口。</p>
+</blockquote>
+<hr>
+<h1 id="二、开放API的弱点"><a href="#二、开放API的弱点" class="headerlink" title="二、开放API的弱点"></a>二、开放API的弱点</h1><h2 id="1-数据窃取"><a href="#1-数据窃取" class="headerlink" title="1. 数据窃取"></a>1. 数据窃取</h2><blockquote>
+<p>用户的密码等信息被不轨之人窃取，登录账号发布敏感信息，盗刷等。</p>
+</blockquote>
+<h2 id="2-数据篡改"><a href="#2-数据篡改" class="headerlink" title="2. 数据篡改"></a>2. 数据篡改</h2><blockquote>
+<p>提交的数据被抓包后进行篡改后再提交。</p>
+</blockquote>
+<h2 id="3-数据泄露"><a href="#3-数据泄露" class="headerlink" title="3. 数据泄露"></a>3. 数据泄露</h2><blockquote>
+<p>爬虫将业务数据甚至核心数据抓取，直接或间接造成损失。</p>
+</blockquote>
+<hr>
+<h1 id="三、开放API解决方案"><a href="#三、开放API解决方案" class="headerlink" title="三、开放API解决方案"></a>三、开放API解决方案</h1><h2 id="1-RSA-DES-加密"><a href="#1-RSA-DES-加密" class="headerlink" title="1. RSA/DES 加密"></a>1. RSA/DES 加密</h2><h3 id="对称加密（DES、AES）"><a href="#对称加密（DES、AES）" class="headerlink" title="对称加密（DES、AES）"></a>对称加密（DES、AES）</h3><ul>
+<li>对称加密是最快速、最简单的一种加密方式，加密（encryption）与解密（decryption）用的是同样的密钥（secret key）。对称加密有很多种算法，由于它效率很高，所以被广泛使用在很多加密协议的核心当中。</li>
+<li>对称加密通常使用的是相对较小的密钥，一般小于256 bit。因为密钥越大，加密越强，但加密与解密的过程越慢。</li>
+<li>对称加密的一大缺点是密钥的管理与分配，换句话说，如何把密钥发送到需要解密你的消息的人的手里是一个问题。在发送密钥的过程中，密钥有很大的风险会被黑客们拦截。现实中通常的做法是将对称加密的密钥进行非对称加密，然后传送给需要它的人。</li>
+</ul>
+<h3 id="非对称加密（RSA）"><a href="#非对称加密（RSA）" class="headerlink" title="非对称加密（RSA）"></a>非对称加密（RSA）</h3><ul>
+<li>非对称加密为数据的加密与解密提供了一个非常安全的方法，它使用了一对密钥，公钥（public key）和私钥（private key）。私钥只能由一方安全保管，不能外泄，而公钥则可以发给任何请求它的人。非对称加密使用这对密钥中的一个进行加密，而解密则需要另一个密钥。比如，你向银行请求公钥，银行将公钥发给你，你使用公钥对消息加密，那么只有私钥的持有人–银行才能对你的消息解密。与对称加密不同的是，银行不需要将私钥通过网络发送出去，因此安全性大大提高。</li>
+<li>目前最常用的非对称加密算法是RSA算法，是Rivest, Shamir, 和Adleman于1978年发明。</li>
+<li>RSA可以用于加密和签名：</li>
+</ul>
+<p><img src="/2018/12/10/开放API接口安全处理/20181210231535322.png" alt></p>
+<p><img src="/2018/12/10/开放API接口安全处理/20181210231740664.png" alt></p>
+<ul>
+<li>HTTPS即用到了对称加密也用到了非对称加密（收费，服务器开销大，性能略低）</li>
+<li>RSA加密 Java 实现：</li>
+</ul>
+<h2 id="2-MD5-混淆算法"><a href="#2-MD5-混淆算法" class="headerlink" title="2. MD5 混淆算法"></a>2. MD5 混淆算法</h2><ul>
+<li>是一种消息摘要算法，一种被广泛使用的密码散列函数，可以产生出一个128位的散列值，用于确保信息传输完整一致，防止篡改。</li>
+<li>不可逆的</li>
+<li>存储一些永远不需要还原的数据，如 密码、MAC地址、IMEI</li>
+<li>通常配合salt 加盐来加密</li>
+<li>现在可以破解的是 通过一个彩虹表碰撞进行暴力破解</li>
+</ul>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>接口文档规定，接口哪些字段（id+名称）进行MD5+salt 加密传输到后台，同样后台也按照相关规则计算，然后比对匹配</li>
+</ul>
+<h2 id="3-TOKEN-令牌"><a href="#3-TOKEN-令牌" class="headerlink" title="3. TOKEN 令牌"></a>3. TOKEN 令牌</h2><ul>
+<li>略</li>
+</ul>
+<hr>
+<h1 id="四、接口实战经验"><a href="#四、接口实战经验" class="headerlink" title="四、接口实战经验"></a>四、接口实战经验</h1><ol>
+<li>不要用自增序列</li>
+<li>日志加完整，防背锅</li>
+<li>短信接口一定要加图形验证码、人机验证码，业务判断，尤其是注册接口（没有用户的任何信息）</li>
+<li>幂等性（ 提交一次和多次结果是一样的）</li>
+<li>时间戳（有效时间）</li>
+</ol>
+<blockquote>
+<p>先获取服务器时间，当作参数一起MD5，然后后台校验MD5成功之后，判断有效时间是否在30s之内。</p>
+</blockquote>
+<hr>
+<h1 id="五、关于RSA加密、解密疑惑"><a href="#五、关于RSA加密、解密疑惑" class="headerlink" title="五、关于RSA加密、解密疑惑"></a>五、关于RSA加密、解密疑惑</h1><ul>
+<li>还有公钥和私钥到底哪个才是用来加密和哪个用来解密？</li>
+<li>不要去硬记。</li>
+<li>你只要想：既然是加密，那肯定是不希望别人知道我的消息，所以只有我才能解密，所以可得出公钥负责加密，私钥负责解密；同理，既然是签名，那肯定是不希望有人冒充我发消息，只有我才能发布这个签名，所以可得出私钥负责签名，公钥负责验证。</li>
+<li>很多人没真正理解RSA的原理，两个大质数(p,q)乘积(n)难以逆向求解，所以pq是对等的，公钥和私钥也是对等的。</li>
+</ul>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Java高级编程">
+    <span class="tag-code">Java高级编程</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/11/30/Java反射机制笔记/">
+        <span class="nav-arrow">← </span>
+        
+          Java反射机制笔记
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/12/11/Base64编码原理/">
+        
+          Base64编码原理
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、开放API接口定义"><span class="toc-nav-text">一、开放API接口定义</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、开放API的弱点"><span class="toc-nav-text">二、开放API的弱点</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-数据窃取"><span class="toc-nav-text">1. 数据窃取</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-数据篡改"><span class="toc-nav-text">2. 数据篡改</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-数据泄露"><span class="toc-nav-text">3. 数据泄露</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、开放API解决方案"><span class="toc-nav-text">三、开放API解决方案</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-RSA-DES-加密"><span class="toc-nav-text">1. RSA/DES 加密</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#对称加密（DES、AES）"><span class="toc-nav-text">对称加密（DES、AES）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#非对称加密（RSA）"><span class="toc-nav-text">非对称加密（RSA）</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-MD5-混淆算法"><span class="toc-nav-text">2. MD5 混淆算法</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#使用"><span class="toc-nav-text">使用</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-TOKEN-令牌"><span class="toc-nav-text">3. TOKEN 令牌</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、接口实战经验"><span class="toc-nav-text">四、接口实战经验</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#五、关于RSA加密、解密疑惑"><span class="toc-nav-text">五、关于RSA加密、解密疑惑</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://jiaohongwei.github.io/2018/12/10/开放API接口安全处理/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "jiaohongwei";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "开放API接口安全处理",
+        owner: "jiaohongwei",
+        repo: "jiaohongwei.github.io",
+        oauth: {
+          client_id: "2ac0968c10be35494f4b",
+          client_secret: "e8afa8b7adbeb92905f17b646db578138e5c2bde"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'false';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
