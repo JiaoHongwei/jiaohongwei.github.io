@@ -10,7 +10,7 @@
   
   <title>
     
-      Linux cp/rm/mv强制覆盖 | Hongwei&#39;s Diary
+      Hash函数处理冲突的方法【转】 | Hongwei&#39;s Diary
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -168,8 +168,8 @@
 
 
     <div id="article-banner">
-  <h2>Linux cp/rm/mv强制覆盖</h2>
-  <p class="post-date">2017-08-18</p>
+  <h2>Hash函数处理冲突的方法【转】</h2>
+  <p class="post-date">2018-03-20</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -178,35 +178,46 @@
   <!-- Article START -->
   <article class="post-article">
     <section class="markdown-content"><blockquote>
-<p>本文记述Linux下的cp/rm/mv强制覆盖以及在Java中的调用（博客园文章迁移）</p>
+<p>本文讲述哈希函数处理冲突的四种基本方法</p>
 </blockquote>
-<h1 id="一、Linux下的cp-rm-mv强制覆盖"><a href="#一、Linux下的cp-rm-mv强制覆盖" class="headerlink" title="一、Linux下的cp/rm/mv强制覆盖"></a>一、Linux下的cp/rm/mv强制覆盖</h1><h2 id="1-反斜杠（-）临时取消别名"><a href="#1-反斜杠（-）临时取消别名" class="headerlink" title="1. 反斜杠（\）临时取消别名"></a>1. 反斜杠（\）临时取消别名</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# \cp filename new/filename   </span><br><span class="line">[root@fz ~]#</span><br></pre></td></tr></table></figure>
-<h2 id="2-unalias-取消别名"><a href="#2-unalias-取消别名" class="headerlink" title="2. unalias 取消别名"></a>2. unalias 取消别名</h2><blockquote>
-<p>注意：这只是临时取消cp的别名，不是永久的</p>
+<h1 id="一、开放定址法"><a href="#一、开放定址法" class="headerlink" title="一、开放定址法"></a>一、开放定址法</h1><blockquote>
+<p>所谓的开放定址法就是一旦发生了冲突，就去寻找下一个空的散列地址，只要散列表足够大，空的散列地址总能找到，并将记录存入 </p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]# unalias cp   </span><br><span class="line">[root@localhost ~]# cp filename new/filename   </span><br><span class="line">[root@localhost ~]#</span><br></pre></td></tr></table></figure>
-<h2 id="3-修改默认配置文件"><a href="#3-修改默认配置文件" class="headerlink" title="3. 修改默认配置文件"></a>3. 修改默认配置文件</h2><blockquote>
-<p>输入alias命令，看到系统内部使用的是cp、mv、rm -i 所以怎么输入都是提示覆盖。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]#</span><br><span class="line">[root@fz ~]# alias</span><br><span class="line">alias cdd=&apos;cd /home/data/android/&apos;</span><br><span class="line">alias cp=&apos;cp -i&apos;</span><br><span class="line">alias l=&apos;ls -la&apos;</span><br><span class="line">alias l.=&apos;ls -d .* --color=auto&apos;</span><br><span class="line">alias ll=&apos;ls -l --color=auto&apos;</span><br><span class="line">alias ls=&apos;ls --color=auto&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">alias tf=&apos;tail -f &apos;</span><br><span class="line">alias vc=&apos;vim ~/.bash_profile&apos;</span><br><span class="line">alias vs=&apos;source ~/.bash_profile&apos;</span><br><span class="line">alias which=&apos;alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde&apos;</span><br></pre></td></tr></table></figure>
+<p>公式为：fi(key) = (f(key)+di) MOD m (di=1,2,3,……,m-1) </p>
+<p>对增量di有三种取法：</p>
+<ol>
+<li>线性探测再散列 di=1,2,3,……,m-1</li>
+<li>平方探测再散列 di=1²,-1²,2²,-2²,3²,-3²,……,k²,-k²</li>
+<li>随机探测再散列 di 是一组伪随机数列</li>
+</ol>
+<p>用开放定址法解决冲突的做法是：</p>
 <blockquote>
-<p>修改 ~/.bashrc ，在 “alias cp=’cp -i’ ”前添加<code>#</code>号注释后即可。</p>
+<p>当冲突发生时，使用某种探测技术在散列表中形成一个探测序列。沿此序列逐个单元地查找，直到找到给定的关键字，或者碰到一个开放的地址（即该地址单元为空）为止（若要插入，在探查到开放的地址，则可将待插入的新结点存人该地址单元）。查找时探测到开放的地址则表明表中无待查的关键字，即查找失败。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz test]# vi ~/.bashrc </span><br><span class="line"># .bashrc</span><br><span class="line"></span><br><span class="line"># User specific aliases and functions</span><br><span class="line"></span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">#alias cp=&apos;cp -i&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line"></span><br><span class="line"># Source global definitions</span><br><span class="line">if [ -f /etc/bashrc ]; then</span><br><span class="line">        . /etc/bashrc</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>重启或者执行 source ~/.bashrc 让命令生效</p>
+<p>例如：</p>
+<p>比如说，我们的关键字集合为{12,67,56,16,25,37,22,29,15,47,48,34},表长为12。<br><br>我们用散列函数f(key) = key mod l2 <br><br>当计算前S个数{12,67,56,16,25}时，都是没有冲突的散列地址，直接存入：<br></p>
+<p><img src="/2018/03/20/Hash函数处理冲突的方法/20170210213355178.png" alt></p>
+<p>计算key = 37时，发现f(37) = 1，此时就与25所在的位置冲突。 <br><br>于是我们应用上面的公式f(37) = (f(37)+1) mod 12 = 2。于是将37存入下标为2的位置： </p>
+<p><img src="/2018/03/20/Hash函数处理冲突的方法/20170210213443522.png" alt></p>
+<h1 id="二、链地址法"><a href="#二、链地址法" class="headerlink" title="二、链地址法"></a>二、链地址法</h1><blockquote>
+<p>链地址法的基本思想是：每个哈希表节点都有一个next指针，多个哈希表节点可以用next指针构成一个单向链表，被分配到同一个索引上的多个节点可以用这个单向链表连接起来。</p>
 </blockquote>
-<h2 id="4-yes指令-管道-自动输入yes"><a href="#4-yes指令-管道-自动输入yes" class="headerlink" title="4. yes指令+管道 自动输入yes"></a>4. yes指令+管道 自动输入yes</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# yes | cp filename new/filename   </span><br><span class="line">cp: overwrite `new/filename&apos;? [root@localhost ~]#</span><br></pre></td></tr></table></figure>
-<hr>
-<h1 id="二、Java后台调用Linux命令实现"><a href="#二、Java后台调用Linux命令实现" class="headerlink" title="二、Java后台调用Linux命令实现"></a>二、Java后台调用Linux命令实现</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void copyIcon() throws IOException, InterruptedException &#123;</span><br><span class="line">      Runtime r = Runtime.getRuntime();</span><br><span class="line">      String cmd_copy = &quot;\\cp -rf temp/AppIcon/*  icon/&quot;;    //copy并覆盖</span><br><span class="line">      String[] cmds = new String[]&#123;&quot;sh&quot;,&quot;-c&quot;,cmd_copy&#125;;</span><br><span class="line">      Process p = r.exec(cmds);</span><br><span class="line">      int result = p.waitFor();</span><br><span class="line">      if (result == 0)&#123;   //表示正常结束</span><br><span class="line">          logger.error(&quot;【copy appIcon 成功】&quot;);</span><br><span class="line">      &#125;else &#123;</span><br><span class="line">          logger.error(&quot;【copy appIcon 失败】&quot;+cmd_copy);</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如：<br>  键值对k2, v2与键值对k1, v1通过计算后的索引值都为2，这时及产生冲突，但是可以通道next指针将k2, k1所在的节点连接起来，这样就解决了哈希的冲突问题 </p>
+<p><img src="/2018/03/20/Hash函数处理冲突的方法/20170210213528336.jpg" alt></p>
+<h1 id="三、再哈希法"><a href="#三、再哈希法" class="headerlink" title="三、再哈希法"></a>三、再哈希法</h1><blockquote>
+<p>再哈希法又叫双哈希法，有多个不同的Hash函数，当发生冲突时，使用第二个，第三个，….，等哈希函数<br>  计算地址，直到无冲突。虽然不易发生聚集，但是增加了计算时间。</p>
+</blockquote>
+<h1 id="四、建立公共溢出区"><a href="#四、建立公共溢出区" class="headerlink" title="四、建立公共溢出区"></a>四、建立公共溢出区</h1><blockquote>
+<p>这种方法的基本思想是：将哈希表分为基本表和溢出表两部分，凡是和基本表发生冲突的元素，一律填入溢出表</p>
+</blockquote>
 </section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#Linux">
-    <span class="tag-code">Linux</span>
+  <a href="/tags#Java高级编程">
+    <span class="tag-code">Java高级编程</span>
   </a>
 
       </div>
@@ -217,17 +228,17 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2017/08/18/Oracle-CLOB-笔记/">
+      <a class="nav-left" href="/2017/08/18/Linux-cp-rm-mv强制覆盖/">
         <span class="nav-arrow">← </span>
         
-          Oracle CLOB 笔记
+          Linux cp/rm/mv强制覆盖
         
       </a>
     
     
-      <a class="nav-right" href="/2018/03/20/Hash函数处理冲突的方法/">
+      <a class="nav-right" href="/2018/08/15/Java-8-Optional/">
         
-          Hash函数处理冲突的方法【转】
+          Java 8 Optional
         
         <span class="nav-arrow"> →</span>
       </a>
@@ -276,7 +287,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、Linux下的cp-rm-mv强制覆盖"><span class="toc-nav-text">一、Linux下的cp/rm/mv强制覆盖</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-反斜杠（-）临时取消别名"><span class="toc-nav-text">1. 反斜杠（\）临时取消别名</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-unalias-取消别名"><span class="toc-nav-text">2. unalias 取消别名</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-修改默认配置文件"><span class="toc-nav-text">3. 修改默认配置文件</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-yes指令-管道-自动输入yes"><span class="toc-nav-text">4. yes指令+管道 自动输入yes</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、Java后台调用Linux命令实现"><span class="toc-nav-text">二、Java后台调用Linux命令实现</span></a></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、开放定址法"><span class="toc-nav-text">一、开放定址法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、链地址法"><span class="toc-nav-text">二、链地址法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、再哈希法"><span class="toc-nav-text">三、再哈希法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、建立公共溢出区"><span class="toc-nav-text">四、建立公共溢出区</span></a></li></ol>
     
   </div>
 </aside>
@@ -286,7 +297,7 @@
 
 <script>
   (function () {
-    var url = 'https://jiaohongwei.github.io/2017/08/18/Linux-cp-rm-mv强制覆盖/';
+    var url = 'https://jiaohongwei.github.io/2018/03/20/Hash函数处理冲突的方法/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -348,7 +359,7 @@
     var gitmentConfig = "jiaohongwei";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "Linux cp/rm/mv强制覆盖",
+        id: "Hash函数处理冲突的方法【转】",
         owner: "jiaohongwei",
         repo: "jiaohongwei.github.io",
         oauth: {

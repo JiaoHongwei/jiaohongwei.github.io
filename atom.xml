@@ -251,6 +251,56 @@
   </entry>
   
   <entry>
+    <title>Java 8 Optional</title>
+    <link href="https://jiaohongwei.github.io/2018/08/15/Java-8-Optional/"/>
+    <id>https://jiaohongwei.github.io/2018/08/15/Java-8-Optional/</id>
+    <published>2018-08-15T13:24:11.000Z</published>
+    <updated>2019-02-20T13:28:00.816Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Optional类"><a href="#Optional类" class="headerlink" title="Optional类"></a>Optional类</h1><ul><li>Optional 类是一个可以为null的容器对象。如果值存在则isPresent()方法会返回true，调用get()方法会返回该对象。</li><li>Optional 是个容器：它可以保存类型T的值，或者仅仅保存null。Optional提供很多有用的方法，这样我们就不用显式进行空值检测。</li><li>Optional 类的引入很好的解决空指针异常。</li></ul><h1 id="一、构造实例"><a href="#一、构造实例" class="headerlink" title="一、构造实例"></a>一、构造实例</h1><ul><li>Optional<user> opt = Optional.empty();        ##创建一个空 Optional</user></li><li>Optional<user> opt = Optional.of(user);        ##user不能为null</user></li><li>Optional<user> opt = Optional.ofNullable(user);    ##user可以为null</user></li></ul><h1 id="二、主要方法"><a href="#二、主要方法" class="headerlink" title="二、主要方法"></a>二、主要方法</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public T get() </span><br><span class="line">public boolean isPresent()</span><br><span class="line">public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper)</span><br><span class="line">public T orElse(T other)</span><br><span class="line">public T orElseGet(Supplier&lt;? extends T&gt; other)</span><br><span class="line">public void ifPresent(Consumer&lt;? super T&gt; consumer)</span><br><span class="line">public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate)</span><br><span class="line">public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper)</span><br><span class="line">public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X</span><br></pre></td></tr></table></figure><h1 id="三、开始使用"><a href="#三、开始使用" class="headerlink" title="三、开始使用"></a>三、开始使用</h1><p>没有 Optional 之前，都是这么来写~</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delJob</span><span class="params">(String jobId)</span> </span>&#123;</span><br><span class="line">    CheckJob object = checkJobRepository.findOne(Long.valueOf(jobId));</span><br><span class="line">    <span class="keyword">if</span> (object != <span class="keyword">null</span>)&#123;</span><br><span class="line">        checkJobRepository.delete(object);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>当有了 Optional ，于是代码就开始这么写了……</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delJob</span><span class="params">(String jobId)</span> </span>&#123;</span><br><span class="line">    Optional&lt;CheckJob&gt; object = checkJobRepository.findById(Long.valueOf(jobId));</span><br><span class="line">    <span class="keyword">if</span> (object.isPresent()) &#123;</span><br><span class="line">        checkJobRepository.delete(object.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>这…和没用有什么区别嘛。。</p><h1 id="四、正确姿势"><a href="#四、正确姿势" class="headerlink" title="四、正确姿势"></a>四、正确姿势</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delJobDemo</span><span class="params">(String jobId)</span> </span>&#123;</span><br><span class="line">    Optional&lt;CheckJob&gt; object = checkJobRepository.findById(Long.valueOf(jobId));</span><br><span class="line">    object.ifPresent(checkJob -&gt; checkJobRepository.delete(checkJob));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@GetMapping</span>(<span class="string">"/account"</span>)</span><br><span class="line"><span class="meta">@Timed</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> BaseRestResponse <span class="title">getAccount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> BaseRestResponse.ok(userService.getUserWithAuthorities()</span><br><span class="line">    .map(UserDTO::<span class="keyword">new</span>)</span><br><span class="line">    .orElseThrow(() -&gt; <span class="keyword">new</span> InternalServerErrorException(<span class="string">"User could not be found"</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h1 id="五、使用注意事项"><a href="#五、使用注意事项" class="headerlink" title="五、使用注意事项"></a>五、使用注意事项</h1><blockquote><p>直白的讲, 当我们还在以如下几种方式使用 Optional 时, 就得开始检视自己了</p></blockquote><ul><li>调用 isPresent() 方法时</li><li>调用 get() 方法时</li><li>Optional 类型作为类/实例属性时</li><li>Optional 类型作为方法参数时</li></ul><p>注意：<br></p><ol><li>isPresent() 与 obj != null 无任何分别， 而没有 isPresent() 作铺垫的 get() 调用在 IntelliJ IDEA 中会收到告警</li><li>Optional 类型不可被序列化, 用作字段类型会出问题<br>使用 Optional 时尽量不直接调用 Optional.get() 方法, Optional.isPresent() 更应该被视为一个私有方法, 应依赖于其他像 Optional.orElse(), Optional.orElseGet(), Optional.map() 等这样的方法</li></ol><h1 id="六、常见Optional使用demo"><a href="#六、常见Optional使用demo" class="headerlink" title="六、常见Optional使用demo"></a>六、常见Optional使用demo</h1><h2 id="1、存在即返回-无则提供默认值"><a href="#1、存在即返回-无则提供默认值" class="headerlink" title="1、存在即返回, 无则提供默认值"></a>1、存在即返回, 无则提供默认值</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">return</span> user.orElse(<span class="keyword">null</span>);  <span class="comment">// 而不是 return user.isPresent() ? user.get() : null;return user.orElse(UNKNOWN_USER);</span></span><br></pre></td></tr></table></figure><h2 id="2、存在即返回-无则由函数来产生"><a href="#2、存在即返回-无则由函数来产生" class="headerlink" title="2、存在即返回, 无则由函数来产生"></a>2、存在即返回, 无则由函数来产生</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">return</span> user.orElseGet(() -&gt; fetchAUserFromDatabase()); </span><br><span class="line"><span class="comment">//而不要 return user.isPresent() ? user: fetchAUserFromDatabase();</span></span><br></pre></td></tr></table></figure><h2 id="3、存在才对它做点什么"><a href="#3、存在才对它做点什么" class="headerlink" title="3、存在才对它做点什么"></a>3、存在才对它做点什么</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">user.ifPresent(System.out::println);</span><br><span class="line"><span class="comment">//而不要下边那样</span></span><br><span class="line"><span class="keyword">if</span> (user.isPresent()) &#123;</span><br><span class="line">System.out.println(user.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Optional类&quot;&gt;&lt;a href=&quot;#Optional类&quot; class=&quot;headerlink&quot; title=&quot;Optional类&quot;&gt;&lt;/a&gt;Optional类&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Optional 类是一个可以为null的容器对象。如果值存在则isPr
+      
+    
+    </summary>
+    
+    
+      <category term="Java高级编程" scheme="https://jiaohongwei.github.io/tags/Java%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hash函数处理冲突的方法【转】</title>
+    <link href="https://jiaohongwei.github.io/2018/03/20/Hash%E5%87%BD%E6%95%B0%E5%A4%84%E7%90%86%E5%86%B2%E7%AA%81%E7%9A%84%E6%96%B9%E6%B3%95/"/>
+    <id>https://jiaohongwei.github.io/2018/03/20/Hash函数处理冲突的方法/</id>
+    <published>2018-03-20T13:26:33.000Z</published>
+    <updated>2019-02-20T13:34:46.982Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>本文讲述哈希函数处理冲突的四种基本方法</p></blockquote><h1 id="一、开放定址法"><a href="#一、开放定址法" class="headerlink" title="一、开放定址法"></a>一、开放定址法</h1><blockquote><p>所谓的开放定址法就是一旦发生了冲突，就去寻找下一个空的散列地址，只要散列表足够大，空的散列地址总能找到，并将记录存入 </p></blockquote><p>公式为：fi(key) = (f(key)+di) MOD m (di=1,2,3,……,m-1) </p><p>对增量di有三种取法：</p><ol><li>线性探测再散列 di=1,2,3,……,m-1</li><li>平方探测再散列 di=1²,-1²,2²,-2²,3²,-3²,……,k²,-k²</li><li>随机探测再散列 di 是一组伪随机数列</li></ol><p>用开放定址法解决冲突的做法是：</p><blockquote><p>当冲突发生时，使用某种探测技术在散列表中形成一个探测序列。沿此序列逐个单元地查找，直到找到给定的关键字，或者碰到一个开放的地址（即该地址单元为空）为止（若要插入，在探查到开放的地址，则可将待插入的新结点存人该地址单元）。查找时探测到开放的地址则表明表中无待查的关键字，即查找失败。</p></blockquote><p>例如：</p><p>比如说，我们的关键字集合为{12,67,56,16,25,37,22,29,15,47,48,34},表长为12。<br><br>我们用散列函数f(key) = key mod l2 <br><br>当计算前S个数{12,67,56,16,25}时，都是没有冲突的散列地址，直接存入：<br></p><p><img src="/2018/03/20/Hash函数处理冲突的方法/20170210213355178.png" alt></p><p>计算key = 37时，发现f(37) = 1，此时就与25所在的位置冲突。 <br><br>于是我们应用上面的公式f(37) = (f(37)+1) mod 12 = 2。于是将37存入下标为2的位置： </p><p><img src="/2018/03/20/Hash函数处理冲突的方法/20170210213443522.png" alt></p><h1 id="二、链地址法"><a href="#二、链地址法" class="headerlink" title="二、链地址法"></a>二、链地址法</h1><blockquote><p>链地址法的基本思想是：每个哈希表节点都有一个next指针，多个哈希表节点可以用next指针构成一个单向链表，被分配到同一个索引上的多个节点可以用这个单向链表连接起来。</p></blockquote><p>如：<br>  键值对k2, v2与键值对k1, v1通过计算后的索引值都为2，这时及产生冲突，但是可以通道next指针将k2, k1所在的节点连接起来，这样就解决了哈希的冲突问题 </p><p><img src="/2018/03/20/Hash函数处理冲突的方法/20170210213528336.jpg" alt></p><h1 id="三、再哈希法"><a href="#三、再哈希法" class="headerlink" title="三、再哈希法"></a>三、再哈希法</h1><blockquote><p>再哈希法又叫双哈希法，有多个不同的Hash函数，当发生冲突时，使用第二个，第三个，….，等哈希函数<br>  计算地址，直到无冲突。虽然不易发生聚集，但是增加了计算时间。</p></blockquote><h1 id="四、建立公共溢出区"><a href="#四、建立公共溢出区" class="headerlink" title="四、建立公共溢出区"></a>四、建立公共溢出区</h1><blockquote><p>这种方法的基本思想是：将哈希表分为基本表和溢出表两部分，凡是和基本表发生冲突的元素，一律填入溢出表</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;本文讲述哈希函数处理冲突的四种基本方法&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;一、开放定址法&quot;&gt;&lt;a href=&quot;#一、开放定址法&quot; class=&quot;headerlink&quot; title=&quot;一、开放定址法&quot;&gt;&lt;/a&gt;一、开放定址法&lt;/h1
+      
+    
+    </summary>
+    
+    
+      <category term="Java高级编程" scheme="https://jiaohongwei.github.io/tags/Java%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Linux cp/rm/mv强制覆盖</title>
     <link href="https://jiaohongwei.github.io/2017/08/18/Linux-cp-rm-mv%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96/"/>
     <id>https://jiaohongwei.github.io/2017/08/18/Linux-cp-rm-mv强制覆盖/</id>

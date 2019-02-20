@@ -10,7 +10,7 @@
   
   <title>
     
-      Linux cp/rm/mv强制覆盖 | Hongwei&#39;s Diary
+      Java 8 Optional | Hongwei&#39;s Diary
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -168,8 +168,8 @@
 
 
     <div id="article-banner">
-  <h2>Linux cp/rm/mv强制覆盖</h2>
-  <p class="post-date">2017-08-18</p>
+  <h2>Java 8 Optional</h2>
+  <p class="post-date">2018-08-15</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -177,36 +177,49 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><blockquote>
-<p>本文记述Linux下的cp/rm/mv强制覆盖以及在Java中的调用（博客园文章迁移）</p>
+    <section class="markdown-content"><h1 id="Optional类"><a href="#Optional类" class="headerlink" title="Optional类"></a>Optional类</h1><ul>
+<li>Optional 类是一个可以为null的容器对象。如果值存在则isPresent()方法会返回true，调用get()方法会返回该对象。</li>
+<li>Optional 是个容器：它可以保存类型T的值，或者仅仅保存null。Optional提供很多有用的方法，这样我们就不用显式进行空值检测。</li>
+<li>Optional 类的引入很好的解决空指针异常。</li>
+</ul>
+<h1 id="一、构造实例"><a href="#一、构造实例" class="headerlink" title="一、构造实例"></a>一、构造实例</h1><ul>
+<li>Optional<user> opt = Optional.empty();        ##创建一个空 Optional</user></li>
+<li>Optional<user> opt = Optional.of(user);        ##user不能为null</user></li>
+<li>Optional<user> opt = Optional.ofNullable(user);    ##user可以为null</user></li>
+</ul>
+<h1 id="二、主要方法"><a href="#二、主要方法" class="headerlink" title="二、主要方法"></a>二、主要方法</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public T get() </span><br><span class="line">public boolean isPresent()</span><br><span class="line">public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper)</span><br><span class="line">public T orElse(T other)</span><br><span class="line">public T orElseGet(Supplier&lt;? extends T&gt; other)</span><br><span class="line">public void ifPresent(Consumer&lt;? super T&gt; consumer)</span><br><span class="line">public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate)</span><br><span class="line">public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper)</span><br><span class="line">public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X</span><br></pre></td></tr></table></figure>
+<h1 id="三、开始使用"><a href="#三、开始使用" class="headerlink" title="三、开始使用"></a>三、开始使用</h1><p>没有 Optional 之前，都是这么来写~</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delJob</span><span class="params">(String jobId)</span> </span>&#123;</span><br><span class="line">    CheckJob object = checkJobRepository.findOne(Long.valueOf(jobId));</span><br><span class="line">    <span class="keyword">if</span> (object != <span class="keyword">null</span>)&#123;</span><br><span class="line">        checkJobRepository.delete(object);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当有了 Optional ，于是代码就开始这么写了……</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delJob</span><span class="params">(String jobId)</span> </span>&#123;</span><br><span class="line">    Optional&lt;CheckJob&gt; object = checkJobRepository.findById(Long.valueOf(jobId));</span><br><span class="line">    <span class="keyword">if</span> (object.isPresent()) &#123;</span><br><span class="line">        checkJobRepository.delete(object.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这…和没用有什么区别嘛。。</p>
+<h1 id="四、正确姿势"><a href="#四、正确姿势" class="headerlink" title="四、正确姿势"></a>四、正确姿势</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delJobDemo</span><span class="params">(String jobId)</span> </span>&#123;</span><br><span class="line">    Optional&lt;CheckJob&gt; object = checkJobRepository.findById(Long.valueOf(jobId));</span><br><span class="line">    object.ifPresent(checkJob -&gt; checkJobRepository.delete(checkJob));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@GetMapping</span>(<span class="string">"/account"</span>)</span><br><span class="line"><span class="meta">@Timed</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> BaseRestResponse <span class="title">getAccount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> BaseRestResponse.ok(userService.getUserWithAuthorities()</span><br><span class="line">    .map(UserDTO::<span class="keyword">new</span>)</span><br><span class="line">    .orElseThrow(() -&gt; <span class="keyword">new</span> InternalServerErrorException(<span class="string">"User could not be found"</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="五、使用注意事项"><a href="#五、使用注意事项" class="headerlink" title="五、使用注意事项"></a>五、使用注意事项</h1><blockquote>
+<p>直白的讲, 当我们还在以如下几种方式使用 Optional 时, 就得开始检视自己了</p>
 </blockquote>
-<h1 id="一、Linux下的cp-rm-mv强制覆盖"><a href="#一、Linux下的cp-rm-mv强制覆盖" class="headerlink" title="一、Linux下的cp/rm/mv强制覆盖"></a>一、Linux下的cp/rm/mv强制覆盖</h1><h2 id="1-反斜杠（-）临时取消别名"><a href="#1-反斜杠（-）临时取消别名" class="headerlink" title="1. 反斜杠（\）临时取消别名"></a>1. 反斜杠（\）临时取消别名</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# \cp filename new/filename   </span><br><span class="line">[root@fz ~]#</span><br></pre></td></tr></table></figure>
-<h2 id="2-unalias-取消别名"><a href="#2-unalias-取消别名" class="headerlink" title="2. unalias 取消别名"></a>2. unalias 取消别名</h2><blockquote>
-<p>注意：这只是临时取消cp的别名，不是永久的</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]# unalias cp   </span><br><span class="line">[root@localhost ~]# cp filename new/filename   </span><br><span class="line">[root@localhost ~]#</span><br></pre></td></tr></table></figure>
-<h2 id="3-修改默认配置文件"><a href="#3-修改默认配置文件" class="headerlink" title="3. 修改默认配置文件"></a>3. 修改默认配置文件</h2><blockquote>
-<p>输入alias命令，看到系统内部使用的是cp、mv、rm -i 所以怎么输入都是提示覆盖。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]#</span><br><span class="line">[root@fz ~]# alias</span><br><span class="line">alias cdd=&apos;cd /home/data/android/&apos;</span><br><span class="line">alias cp=&apos;cp -i&apos;</span><br><span class="line">alias l=&apos;ls -la&apos;</span><br><span class="line">alias l.=&apos;ls -d .* --color=auto&apos;</span><br><span class="line">alias ll=&apos;ls -l --color=auto&apos;</span><br><span class="line">alias ls=&apos;ls --color=auto&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">alias tf=&apos;tail -f &apos;</span><br><span class="line">alias vc=&apos;vim ~/.bash_profile&apos;</span><br><span class="line">alias vs=&apos;source ~/.bash_profile&apos;</span><br><span class="line">alias which=&apos;alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde&apos;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>修改 ~/.bashrc ，在 “alias cp=’cp -i’ ”前添加<code>#</code>号注释后即可。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz test]# vi ~/.bashrc </span><br><span class="line"># .bashrc</span><br><span class="line"></span><br><span class="line"># User specific aliases and functions</span><br><span class="line"></span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br><span class="line">#alias cp=&apos;cp -i&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line"></span><br><span class="line"># Source global definitions</span><br><span class="line">if [ -f /etc/bashrc ]; then</span><br><span class="line">        . /etc/bashrc</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>重启或者执行 source ~/.bashrc 让命令生效</p>
-</blockquote>
-<h2 id="4-yes指令-管道-自动输入yes"><a href="#4-yes指令-管道-自动输入yes" class="headerlink" title="4. yes指令+管道 自动输入yes"></a>4. yes指令+管道 自动输入yes</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@fz ~]# yes | cp filename new/filename   </span><br><span class="line">cp: overwrite `new/filename&apos;? [root@localhost ~]#</span><br></pre></td></tr></table></figure>
-<hr>
-<h1 id="二、Java后台调用Linux命令实现"><a href="#二、Java后台调用Linux命令实现" class="headerlink" title="二、Java后台调用Linux命令实现"></a>二、Java后台调用Linux命令实现</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void copyIcon() throws IOException, InterruptedException &#123;</span><br><span class="line">      Runtime r = Runtime.getRuntime();</span><br><span class="line">      String cmd_copy = &quot;\\cp -rf temp/AppIcon/*  icon/&quot;;    //copy并覆盖</span><br><span class="line">      String[] cmds = new String[]&#123;&quot;sh&quot;,&quot;-c&quot;,cmd_copy&#125;;</span><br><span class="line">      Process p = r.exec(cmds);</span><br><span class="line">      int result = p.waitFor();</span><br><span class="line">      if (result == 0)&#123;   //表示正常结束</span><br><span class="line">          logger.error(&quot;【copy appIcon 成功】&quot;);</span><br><span class="line">      &#125;else &#123;</span><br><span class="line">          logger.error(&quot;【copy appIcon 失败】&quot;+cmd_copy);</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>调用 isPresent() 方法时</li>
+<li>调用 get() 方法时</li>
+<li>Optional 类型作为类/实例属性时</li>
+<li>Optional 类型作为方法参数时</li>
+</ul>
+<p>注意：<br></p>
+<ol>
+<li>isPresent() 与 obj != null 无任何分别， 而没有 isPresent() 作铺垫的 get() 调用在 IntelliJ IDEA 中会收到告警</li>
+<li>Optional 类型不可被序列化, 用作字段类型会出问题<br>使用 Optional 时尽量不直接调用 Optional.get() 方法, Optional.isPresent() 更应该被视为一个私有方法, 应依赖于其他像 Optional.orElse(), Optional.orElseGet(), Optional.map() 等这样的方法</li>
+</ol>
+<h1 id="六、常见Optional使用demo"><a href="#六、常见Optional使用demo" class="headerlink" title="六、常见Optional使用demo"></a>六、常见Optional使用demo</h1><h2 id="1、存在即返回-无则提供默认值"><a href="#1、存在即返回-无则提供默认值" class="headerlink" title="1、存在即返回, 无则提供默认值"></a>1、存在即返回, 无则提供默认值</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">return</span> user.orElse(<span class="keyword">null</span>);  <span class="comment">// 而不是 return user.isPresent() ? user.get() : null;return user.orElse(UNKNOWN_USER);</span></span><br></pre></td></tr></table></figure>
+<h2 id="2、存在即返回-无则由函数来产生"><a href="#2、存在即返回-无则由函数来产生" class="headerlink" title="2、存在即返回, 无则由函数来产生"></a>2、存在即返回, 无则由函数来产生</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">return</span> user.orElseGet(() -&gt; fetchAUserFromDatabase()); </span><br><span class="line"><span class="comment">//而不要 return user.isPresent() ? user: fetchAUserFromDatabase();</span></span><br></pre></td></tr></table></figure>
+<h2 id="3、存在才对它做点什么"><a href="#3、存在才对它做点什么" class="headerlink" title="3、存在才对它做点什么"></a>3、存在才对它做点什么</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">user.ifPresent(System.out::println);</span><br><span class="line"><span class="comment">//而不要下边那样</span></span><br><span class="line"><span class="keyword">if</span> (user.isPresent()) &#123;</span><br><span class="line">System.out.println(user.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#Linux">
-    <span class="tag-code">Linux</span>
+  <a href="/tags#Java高级编程">
+    <span class="tag-code">Java高级编程</span>
   </a>
 
       </div>
@@ -217,17 +230,17 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2017/08/18/Oracle-CLOB-笔记/">
+      <a class="nav-left" href="/2018/03/20/Hash函数处理冲突的方法/">
         <span class="nav-arrow">← </span>
         
-          Oracle CLOB 笔记
+          Hash函数处理冲突的方法【转】
         
       </a>
     
     
-      <a class="nav-right" href="/2018/03/20/Hash函数处理冲突的方法/">
+      <a class="nav-right" href="/2018/08/15/Restful架构API编码规范/">
         
-          Hash函数处理冲突的方法【转】
+          Restful架构API编码规范
         
         <span class="nav-arrow"> →</span>
       </a>
@@ -276,7 +289,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、Linux下的cp-rm-mv强制覆盖"><span class="toc-nav-text">一、Linux下的cp/rm/mv强制覆盖</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-反斜杠（-）临时取消别名"><span class="toc-nav-text">1. 反斜杠（\）临时取消别名</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-unalias-取消别名"><span class="toc-nav-text">2. unalias 取消别名</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-修改默认配置文件"><span class="toc-nav-text">3. 修改默认配置文件</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-yes指令-管道-自动输入yes"><span class="toc-nav-text">4. yes指令+管道 自动输入yes</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、Java后台调用Linux命令实现"><span class="toc-nav-text">二、Java后台调用Linux命令实现</span></a></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Optional类"><span class="toc-nav-text">Optional类</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、构造实例"><span class="toc-nav-text">一、构造实例</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、主要方法"><span class="toc-nav-text">二、主要方法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、开始使用"><span class="toc-nav-text">三、开始使用</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、正确姿势"><span class="toc-nav-text">四、正确姿势</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#五、使用注意事项"><span class="toc-nav-text">五、使用注意事项</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#六、常见Optional使用demo"><span class="toc-nav-text">六、常见Optional使用demo</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1、存在即返回-无则提供默认值"><span class="toc-nav-text">1、存在即返回, 无则提供默认值</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2、存在即返回-无则由函数来产生"><span class="toc-nav-text">2、存在即返回, 无则由函数来产生</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3、存在才对它做点什么"><span class="toc-nav-text">3、存在才对它做点什么</span></a></li></ol></li></ol>
     
   </div>
 </aside>
@@ -286,7 +299,7 @@
 
 <script>
   (function () {
-    var url = 'https://jiaohongwei.github.io/2017/08/18/Linux-cp-rm-mv强制覆盖/';
+    var url = 'https://jiaohongwei.github.io/2018/08/15/Java-8-Optional/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -348,7 +361,7 @@
     var gitmentConfig = "jiaohongwei";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "Linux cp/rm/mv强制覆盖",
+        id: "Java 8 Optional",
         owner: "jiaohongwei",
         repo: "jiaohongwei.github.io",
         oauth: {
