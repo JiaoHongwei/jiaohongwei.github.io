@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="hongwei&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      NIO、BIO、AIO的区别，及NIO的应用和框架选型【转】 | Hongwei&#39;s Diary
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/css/plugins/gitment.css">
+  
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hongwei's Diary</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="https://github.com/JiaoHongwei" class="item-link">GitHub</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="https://github.com/JiaoHongwei" class="menu-link">GitHub</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+<style>
+    .forkme{
+        display: none;
+    }
+    @media (min-width: 1500px) {
+        .forkme{
+            display: inline;
+        }
+    }
+</style>
+<a style="position: fixed;right: 0;z-index: 9999;" class="forkme" href="https://github.com/JiaoHongwei"><img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+
+
+    <div id="article-banner">
+  <h2>NIO、BIO、AIO的区别，及NIO的应用和框架选型【转】</h2>
+  <p class="post-date">2018-11-17</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><blockquote>
+<p>谈到并发编程就不得不提到NIO，以及相关的Java NIO框架Netty等，并且在很多面试中也经常提到NIO和AIO、同步和异步、阻塞和非阻塞等的区别。我先简短介绍下几个NIO相关的概念，然后再谈NIO重点掌握内容，以及Java NIO框架选型。</p>
+</blockquote>
+<h1 id="一、-BIO、NIO、AIO的区别"><a href="#一、-BIO、NIO、AIO的区别" class="headerlink" title="一、 BIO、NIO、AIO的区别"></a>一、 BIO、NIO、AIO的区别</h1><p><strong>IO模型主要分类：</strong></p>
+<ul>
+<li>同步(synchronous) IO和异步(asynchronous) IO</li>
+<li>阻塞(blocking) IO和非阻塞(non-blocking)IO</li>
+<li>同步阻塞(blocking-IO)简称BIO</li>
+<li>同步非阻塞(non-blocking-IO)简称NIO</li>
+<li>异步非阻塞(synchronous-non-blocking-IO)简称AIO</li>
+</ul>
+<h2 id="1-BIO-同步阻塞I-O模式"><a href="#1-BIO-同步阻塞I-O模式" class="headerlink" title="1. BIO (同步阻塞I/O模式)"></a>1. BIO (同步阻塞I/O模式)</h2><blockquote>
+<p>数据的读取写入必须阻塞在一个线程内等待其完成。</p>
+</blockquote>
+<blockquote>
+<p>这里使用那个经典的烧开水例子，这里假设一个烧开水的场景，有一排水壶在烧开水，BIO的工作模式就是， 叫一个线程停留在一个水壶那，直到这个水壶烧开，才去处理下一个水壶。但是实际上线程在等待水壶烧开的时间段什么都没有做。</p>
+</blockquote>
+<h2 id="2-NIO（同步非阻塞）"><a href="#2-NIO（同步非阻塞）" class="headerlink" title="2. NIO（同步非阻塞）"></a>2. NIO（同步非阻塞）</h2><blockquote>
+<p>同时支持阻塞与非阻塞模式，但这里我们以其同步非阻塞I/O模式来说明，那么什么叫做同步非阻塞？如果还拿烧开水来说，NIO的做法是叫一个线程不断的轮询每个水壶的状态，看看是否有水壶的状态发生了改变，从而进行下一步的操作。</p>
+</blockquote>
+<h2 id="3-AIO-（异步非阻塞I-O模型）"><a href="#3-AIO-（异步非阻塞I-O模型）" class="headerlink" title="3. AIO （异步非阻塞I/O模型）"></a>3. AIO （异步非阻塞I/O模型）</h2><blockquote>
+<p>异步非阻塞与同步非阻塞的区别在哪里？异步非阻塞无需一个线程去轮询所有IO操作的状态改变，在相应的状态改变后，系统会通知对应的线程来处理。对应到烧开水中就是，为每个水壶上面装了一个开关，水烧开之后，水壶会自动通知我水烧开了。</p>
+</blockquote>
+<h2 id="4-IO与NIO区别："><a href="#4-IO与NIO区别：" class="headerlink" title="4. IO与NIO区别："></a>4. IO与NIO区别：</h2><p><img src="/2018/11/17/NIO、BIO、AIO的区别，及NIO的应用和框架选型/556dd80a77b24181b4a15b71b8565e43.jpg" alt></p>
+<h2 id="5-同步与异步的区别："><a href="#5-同步与异步的区别：" class="headerlink" title="5. 同步与异步的区别："></a>5. 同步与异步的区别：</h2><blockquote>
+<p>同步：发送一个请求，等待返回，再发送下一个请求，同步可以避免出现死锁，脏读的发生。</p>
+</blockquote>
+<blockquote>
+<p>异步：发送一个请求，不等待返回，随时可以再发送下一个请求，可以提高效率，保证并发。</p>
+</blockquote>
+<h2 id="6-阻塞和非阻塞"><a href="#6-阻塞和非阻塞" class="headerlink" title="6. 阻塞和非阻塞"></a>6. 阻塞和非阻塞</h2><blockquote>
+<p>阻塞：传统的IO流都是阻塞式的。也就是说，当一个线程调用read()或者write()方法时，该线程将被阻塞，直到有一些数据读读取或者被写入，在此期间，该线程不能执行其他任何任务。在完成网络通信进行IO操作时，由于线程会阻塞，所以服务器端必须为每个客户端都提供一个独立的线程进行处理，当服务器端需要处理大量的客户端时，性能急剧下降。</p>
+</blockquote>
+<blockquote>
+<p>非阻塞：Java NIO是非阻塞式的。当线程从某通道进行读写数据时，若没有数据可用时，该线程会去执行其他任务。线程通常将非阻塞IO的空闲时间用于在其他通道上执行IO操作，所以单独的线程可以管理多个输入和输出通道。因此NIO可以让服务器端使用一个或有限几个线程来同时处理连接到服务器端的所有客户端。</p>
+</blockquote>
+<h2 id="7-BIO、NIO、AIO适用场景"><a href="#7-BIO、NIO、AIO适用场景" class="headerlink" title="7. BIO、NIO、AIO适用场景"></a>7. BIO、NIO、AIO适用场景</h2><ul>
+<li>BIO方式适用于连接数目比较小且固定的架构，这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择。</li>
+<li>NIO方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，并发局限于应用中，编程比较复杂。</li>
+<li>AIO方式使用于连接数目多且连接比较长（重操作）的架构，比如相册服务器，充分调用OS参与并发操作，编程比较复杂，JDK7开始支持。</li>
+</ul>
+<h1 id="二、NIO的3个核心概念"><a href="#二、NIO的3个核心概念" class="headerlink" title="二、NIO的3个核心概念"></a>二、NIO的3个核心概念</h1><blockquote>
+<p>NIO重点是把 <strong>Channel（通道）</strong>，<strong>Buffer（缓冲区）</strong>，<strong>Selector（选择器）</strong>三个类之间的关系弄清楚。</p>
+</blockquote>
+<h2 id="1-缓冲区Buffer"><a href="#1-缓冲区Buffer" class="headerlink" title="1. 缓冲区Buffer"></a>1. 缓冲区Buffer</h2><blockquote>
+<p>Buffer是一个对象。它包含一些要写入或者读出的数据。在面向流的I/O中，可以将数据写入或者将数据直接读到Stream对象中。</p>
+</blockquote>
+<blockquote>
+<p><strong>在NIO中，所有的数据都是用缓冲区处理。</strong>这也就本文上面谈到的<strong>IO是面向流的，NIO是面向缓冲区的</strong>。</p>
+</blockquote>
+<blockquote>
+<p>缓冲区实质是一个数组，通常它是一个字节数组（ByteBuffer），也可以使用其他类的数组。但是一个缓冲区不仅仅是一个数组，缓冲区提供了对数据的结构化访问以及维护读写位置（limit）等信息。</p>
+</blockquote>
+<blockquote>
+<p>最常用的缓冲区是ByteBuffer，一个ByteBuffer提供了一组功能于操作byte数组。除了ByteBuffer，还有其他的一些缓冲区，事实上，每一种Java基本类型（除了Boolean）都对应一种缓冲区，具体如下：</p>
+</blockquote>
+<ul>
+<li>ByteBuffer：字节缓冲区</li>
+<li>CharBuffer：字符缓冲区</li>
+<li>ShortBuffer：短整型缓冲区</li>
+<li>IntBuffer：整型缓冲区</li>
+<li>LongBuffer：长整型缓冲区</li>
+<li>FloatBuffer：浮点型缓冲区</li>
+<li>DoubleBuffer：双精度浮点型缓冲区</li>
+</ul>
+<h2 id="2-通道Channel"><a href="#2-通道Channel" class="headerlink" title="2. 通道Channel"></a>2. 通道Channel</h2><blockquote>
+<p>Channel是一个通道，可以通过它读取和写入数据，他就像自来水管一样，网络数据通过Channel读取和写入。</p>
+</blockquote>
+<blockquote>
+<p>通道和流不同之处在于通道是双向的，流只是在一个方向移动，而且通道可以用于读，写或者同时用于读写。</p>
+</blockquote>
+<blockquote>
+<p>因为Channel是全双工的，所以它比流更好地映射底层操作系统的API，特别是在UNIX网络编程中，底层操作系统的通道都是全双工的，同时支持读和写。</p>
+</blockquote>
+<p>Channel有四种实现：</p>
+<ol>
+<li>FileChannel:是从文件中读取数据。</li>
+<li>DatagramChannel:从UDP网络中读取或者写入数据。</li>
+<li>SocketChannel:从TCP网络中读取或者写入数据。</li>
+<li>ServerSocketChannel:允许你监听来自TCP的连接，就像服务器一样。每一个连接都会有一个SocketChannel产生。</li>
+</ol>
+<h2 id="3-多路复用器Selector"><a href="#3-多路复用器Selector" class="headerlink" title="3. 多路复用器Selector"></a>3. 多路复用器Selector</h2><blockquote>
+<p>Selector选择器可以监听多个Channel通道感兴趣的事情(read、write、accept(服务端接收)、connect，实现一个线程管理多个Channel，节省线程切换上下文的资源消耗。Selector只能管理非阻塞的通道，FileChannel是阻塞的，无法管理。</p>
+</blockquote>
+<p>关键对象</p>
+<ul>
+<li>Selector：选择器对象，通道注册、通道监听对象和Selector相关。</li>
+<li>SelectorKey：通道监听关键字，通过它来监听通道状态。</li>
+</ul>
+<p>监听注册</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">socketChannel.register(selector, SelectionKey.OP_READ); // 监听注册在Selector</span><br></pre></td></tr></table></figure>
+<p>监听的事件有</p>
+<ul>
+<li>OP_ACCEPT: 接收就绪，serviceSocketChannel使用的</li>
+<li>OP_READ: 读取就绪，socketChannel使用</li>
+<li>OP_WRITE: 写入就绪，socketChannel使用</li>
+<li>OP_CONNECT: 连接就绪，socketChannel使用</li>
+</ul>
+<h1 id="三、NIO的应用和框架"><a href="#三、NIO的应用和框架" class="headerlink" title="三、NIO的应用和框架"></a>三、NIO的应用和框架</h1><h2 id="1-NIO的应用"><a href="#1-NIO的应用" class="headerlink" title="1. NIO的应用"></a>1. NIO的应用</h2><blockquote>
+<p>Java NIO成功的应用在了各种分布式、即时通信和中间件Java系统中，充分的证明了基于NIO构建的通信基础，是一种高效，且扩展性很强的通信架构。</p>
+</blockquote>
+<p>例如：Dubbo(服务框架)，就默认使用Netty作为基础通信组件，用于实现各进程节点之间的内部通信。</p>
+<blockquote>
+<p>Jetty、Mina、Netty、Dubbo、ZooKeeper等都是基于NIO方式实现。</p>
+</blockquote>
+<ul>
+<li>Mina出身于开源界的大牛Apache组织</li>
+<li>Netty出身于商业开源大亨Jboss</li>
+<li>Dubbo阿里分布式服务框架</li>
+</ul>
+<h2 id="2-NIO框架"><a href="#2-NIO框架" class="headerlink" title="2. NIO框架"></a>2. NIO框架</h2><blockquote>
+<p>特别是Netty是目前最流行的一个Java开源框架NIO框架，Netty提供异步的、事件驱动的网络应用程序框架和工具，用以快速开发高性能、高可靠性的网络服务器和客户端程序。</p>
+</blockquote>
+<blockquote>
+<p>相比JDK原生NIO，Netty提供了相对十分简单易用的API，非常适合网络编程。</p>
+</blockquote>
+<blockquote>
+<p>Mina和Netty这两个NIO框架的创作者是同一个人Trustin Lee 。Netty从某种程度上讲是Mina的延伸和扩展，解决了一些Mina上的设计缺陷，也优化了一下Mina上面的设计理念。</p>
+</blockquote>
+<p>另一方面Netty相比较Mina的优势：</p>
+<ol>
+<li>更容易学习</li>
+<li>API更简单</li>
+<li>详细的范例源码和API文档</li>
+<li>更活跃的论坛和社区</li>
+<li>更高的代码更新维护速度</li>
+</ol>
+<blockquote>
+<p>Netty无疑是NIO框架的首选，它的健壮性、功能、性能、可定制性和可扩展性在同类框架都是首屈一指的，后续将重点详细谈Netty的实现原理以及实战场景。</p>
+</blockquote>
+<h1 id="四、作者声明"><a href="#四、作者声明" class="headerlink" title="四、作者声明"></a>四、作者声明</h1><p>转载请保留页面地址：<a href="http://youzhixueyuan.com/java-nio-introduce.html" target="_blank" rel="noopener">http://youzhixueyuan.com/java-nio-introduce.html</a></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#高并发编程系列">
+    <span class="tag-code">高并发编程系列</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/08/15/Restful架构API编码规范/">
+        <span class="nav-arrow">← </span>
+        
+          Restful架构API编码规范
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/11/20/服务器部署Spring-Boot-jar包应用/">
+        
+          服务器部署Spring Boot .jar包应用
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、-BIO、NIO、AIO的区别"><span class="toc-nav-text">一、 BIO、NIO、AIO的区别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-BIO-同步阻塞I-O模式"><span class="toc-nav-text">1. BIO (同步阻塞I/O模式)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-NIO（同步非阻塞）"><span class="toc-nav-text">2. NIO（同步非阻塞）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-AIO-（异步非阻塞I-O模型）"><span class="toc-nav-text">3. AIO （异步非阻塞I/O模型）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-IO与NIO区别："><span class="toc-nav-text">4. IO与NIO区别：</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#5-同步与异步的区别："><span class="toc-nav-text">5. 同步与异步的区别：</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#6-阻塞和非阻塞"><span class="toc-nav-text">6. 阻塞和非阻塞</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#7-BIO、NIO、AIO适用场景"><span class="toc-nav-text">7. BIO、NIO、AIO适用场景</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#二、NIO的3个核心概念"><span class="toc-nav-text">二、NIO的3个核心概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-缓冲区Buffer"><span class="toc-nav-text">1. 缓冲区Buffer</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-通道Channel"><span class="toc-nav-text">2. 通道Channel</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-多路复用器Selector"><span class="toc-nav-text">3. 多路复用器Selector</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#三、NIO的应用和框架"><span class="toc-nav-text">三、NIO的应用和框架</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-NIO的应用"><span class="toc-nav-text">1. NIO的应用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-NIO框架"><span class="toc-nav-text">2. NIO框架</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#四、作者声明"><span class="toc-nav-text">四、作者声明</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://jiaohongwei.github.io/2018/11/17/NIO、BIO、AIO的区别，及NIO的应用和框架选型/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "jiaohongwei";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "NIO、BIO、AIO的区别，及NIO的应用和框架选型【转】",
+        owner: "jiaohongwei",
+        repo: "jiaohongwei.github.io",
+        oauth: {
+          client_id: "2ac0968c10be35494f4b",
+          client_secret: "e8afa8b7adbeb92905f17b646db578138e5c2bde"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2016 - 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'false';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
