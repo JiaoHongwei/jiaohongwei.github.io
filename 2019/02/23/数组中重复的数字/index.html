@@ -10,7 +10,7 @@
   
   <title>
     
-      分布式锁原理和实现 | Hongwei&#39;s Diary
+      数组中重复的数字 | Hongwei&#39;s Diary
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -168,8 +168,8 @@
 
 
     <div id="article-banner">
-  <h2>分布式锁原理和实现</h2>
-  <p class="post-date">2019-02-22</p>
+  <h2>数组中重复的数字</h2>
+  <p class="post-date">2019-02-23</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -177,14 +177,29 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"></section>
+    <section class="markdown-content"><h1 id="一、问题描述"><a href="#一、问题描述" class="headerlink" title="一、问题描述"></a>一、问题描述</h1><blockquote>
+<p>在长度为n的数组中，所有的元素都是0到n-1的范围内。 数组中的某些数字是重复的，但不知道有几个重复的数字，也不知道重复了几次，请找出任意重复的数字。 例如，输入长度为7的数组{2,3,1,0,2,5,3}，那么对应的输出为2或3</p>
+</blockquote>
+<h2 id="1-解法一：排序扫描"><a href="#1-解法一：排序扫描" class="headerlink" title="1. 解法一：排序扫描"></a>1. 解法一：排序扫描</h2><blockquote>
+<p>将输入的数组进行排序，遍历排序后的数组找到重复的数字。排序一个长度为n的数字的时间复杂度为$\omicron(nlogn)$,所以这种方法的时间复杂度为$\omicron(nlogn)$。</p>
+</blockquote>
+<h2 id="2-解法二：使用哈希表"><a href="#2-解法二：使用哈希表" class="headerlink" title="2. 解法二：使用哈希表"></a>2. 解法二：使用哈希表</h2><blockquote>
+<p>使用哈希表来解决这个问题。从头到尾顺序扫描数组中的每一个数，没扫描一个数字可以用$\omicron(1)$的时间在哈希表中判断是否包含此数字，如果哈希表中没有此数字就将此数字加入到哈希表中，如果哈希表中已存在此数字就找到重复的数字。时间复杂度为$\omicron(n)$，但是空间复杂度也为$\omicron(n)$，以空间换区时间。</p>
+</blockquote>
+<h2 id="3-解法三：比较交换"><a href="#3-解法三：比较交换" class="headerlink" title="3. 解法三：比较交换"></a>3. 解法三：比较交换</h2><blockquote>
+<p>数组中的数字为0到n-1的范围内。如果这个数组中没有重复的数字，则对应的i位置的数据也为i。可以重排此数组，扫描数组中的每个数字，当扫描到下标为i的数字时，首先比较这个数字（m）是不是等于i。如果是，接着扫描下一个数字。如果不是，再拿它和第m个数字比较，如果相等则找到重复的数据。否则就把第i个数字与第m个数字交换。重复这个比较、交换的过程，直到找到重复的数字。</p>
+</blockquote>
+<blockquote>
+<p>代码中尽管有一个两重循环，但每个数字最多只要交换两次就能找到属于它自己的位置，因此总的复杂度是$\omicron(n)$，另外所有的操作都是在输入数组上进行的，不需要额外的分配内存，空间复杂度为$\omicron(1)$</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.hw.chapter_1;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span> hw</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2019/2/23</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DuplicateNumber</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] numbers = &#123;<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">5</span>, <span class="number">3</span>&#125;;</span><br><span class="line">        <span class="keyword">int</span>[] duplication = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">boolean</span> bool = duplicate(numbers, numbers.length, duplication);</span><br><span class="line">        <span class="keyword">if</span> (bool) &#123;</span><br><span class="line">            System.out.println(duplication[<span class="number">0</span>]);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"数组中无重复数字！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">duplicate</span><span class="params">(<span class="keyword">int</span>[] numbers, <span class="keyword">int</span> length, <span class="keyword">int</span>[] duplication)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (numbers == <span class="keyword">null</span> || length &lt;= <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> a : numbers) &#123;</span><br><span class="line">            <span class="keyword">if</span> (a &lt; <span class="number">0</span> || a &gt;= length)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> temp;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (numbers[i] != i) &#123;</span><br><span class="line">                <span class="keyword">if</span> (numbers[numbers[i]] == numbers[i]) &#123;</span><br><span class="line">                    duplication[<span class="number">0</span>] = numbers[i];</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                temp = numbers[i];</span><br><span class="line">                numbers[i] = numbers[temp];</span><br><span class="line">                numbers[temp] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#Java高级编程">
-    <span class="tag-code">Java高级编程</span>
+  <a href="/tags#剑指offer">
+    <span class="tag-code">剑指offer</span>
   </a>
 
       </div>
@@ -195,20 +210,13 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2019/02/19/TCP三次握手及四次挥手详解/">
+      <a class="nav-left" href="/2019/02/22/分布式锁原理和实现/">
         <span class="nav-arrow">← </span>
         
-          TCP三次握手及四次挥手详解【转】
+          分布式锁原理和实现
         
       </a>
     
-    
-      <a class="nav-right" href="/2019/02/23/数组中重复的数字/">
-        
-          数组中重复的数字
-        
-        <span class="nav-arrow"> →</span>
-      </a>
     
   </div>
 
@@ -254,7 +262,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="nav">none</ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#一、问题描述"><span class="toc-nav-text">一、问题描述</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-解法一：排序扫描"><span class="toc-nav-text">1. 解法一：排序扫描</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-解法二：使用哈希表"><span class="toc-nav-text">2. 解法二：使用哈希表</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-解法三：比较交换"><span class="toc-nav-text">3. 解法三：比较交换</span></a></li></ol></li></ol>
     
   </div>
 </aside>
@@ -264,7 +272,7 @@
 
 <script>
   (function () {
-    var url = 'https://jiaohongwei.github.io/2019/02/22/分布式锁原理和实现/';
+    var url = 'https://jiaohongwei.github.io/2019/02/23/数组中重复的数字/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -326,7 +334,7 @@
     var gitmentConfig = "jiaohongwei";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "分布式锁原理和实现",
+        id: "数组中重复的数字",
         owner: "jiaohongwei",
         repo: "jiaohongwei.github.io",
         oauth: {
