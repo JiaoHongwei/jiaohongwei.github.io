@@ -10,7 +10,7 @@
   
   <title>
     
-      Python 3.6 抓取微博m站数据 | Hongwei&#39;s Diary
+      Kafka 基本操作 | Hongwei&#39;s Diary
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -168,8 +168,8 @@
 
 
     <div id="article-banner">
-  <h2>Python 3.6 抓取微博m站数据</h2>
-  <p class="post-date">2019-03-07</p>
+  <h2>Kafka 基本操作</h2>
+  <p class="post-date">2019-04-27</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -177,95 +177,66 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><h2 id="Python-3-6-抓取微博m站数据"><a href="#Python-3-6-抓取微博m站数据" class="headerlink" title="Python 3.6 抓取微博m站数据"></a>Python 3.6 抓取微博m站数据</h2><blockquote>
-<p>最近两天工作需求，写了个脚本抓取微博信息。语言为python，现学现卖，不过python用起来确实比java方便多了，简洁明了。</p>
-</blockquote>
-<blockquote>
-<p>本脚本截止20190307，实测了下目前微博m站（<a href="https://m.weibo.cn/）、wap站（https://weibo.cn/）、c站（https://weibo.com/）都是会封IP的，至于之前好多构建账号池来爬取wap站的博客试了试都失败了，而且字段解析都有问题，毕竟微博的数据格式也在更新。所以自己看了看python语法，写了两个脚本来抓取，现在不使用代理单机1天50万条数据左右，日常足以。" target="_blank" rel="noopener">https://m.weibo.cn/）、wap站（https://weibo.cn/）、c站（https://weibo.com/）都是会封IP的，至于之前好多构建账号池来爬取wap站的博客试了试都失败了，而且字段解析都有问题，毕竟微博的数据格式也在更新。所以自己看了看python语法，写了两个脚本来抓取，现在不使用代理单机1天50万条数据左右，日常足以。</a></p>
-</blockquote>
-<blockquote>
-<p>关于微博数据解析的自行百度，我只解析了微博时间和机型，其他的有需要自行添加就可以。</p>
-</blockquote>
-<ul>
-<li>网址： <a href="https://m.weibo.cn/u/5463009082" target="_blank" rel="noopener">https://m.weibo.cn/u/5463009082</a> 新浪微博m站（智能手机网页端）<br> </li>
-<li>api ： <a href="https://m.weibo.cn/api/container/getIndex?type=uid&amp;value=5463009082&amp;containerid=1076031000258404" target="_blank" rel="noopener">https://m.weibo.cn/api/container/getIndex?type=uid&amp;value=5463009082&amp;containerid=1076031000258404</a><br> </li>
-<li>抓取： 根据用户userId抓取历史发布的微博信息<br> </li>
-<li>方法： python请求api接口（非页面）<br> </li>
-<li>反扒： 疯狂抓取10~20s，IP会被禁封1~3分钟<br> </li>
-<li>备注： 无需登录+IP代理池<br> </li>
-<li>环境： Windosw或Linux、Python 3.6、Mysql、Redis<br> </li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>效果</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>单机版（多线程）</td>
-<td>50万/天</td>
-</tr>
-<tr>
-<td>单机版（多线程）+IP代理池</td>
-<td>150万/天</td>
-</tr>
-<tr>
-<td>分布式（多线程）+IP代理池</td>
-<td>千万~亿级</td>
-</tr>
-</tbody>
-</table>
-<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ul>
-<li>senior    # 分布式多线程爬取</li>
-<li>simple    # 单机版单线程爬取（可以自己改成多线程或者直接开多个窗口运行）</li>
-<li>venv    </li>
-<li>redis_consumer.py       # redis 消费者 负责存储数据到数据库或者文件</li>
-<li>redis_userIds.py       # redis 生产id 负责将用户id存储进redis 队列</li>
-<li>weibo.sql           # 表结构文件</li>
-</ul>
-<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><ul>
-<li>可以选择直接入库，如果怕性能影响，也可以先存入文件或者存入redis队列，后续再慢慢入库</li>
-<li>Mysql 5.5</li>
-<li>weibo.sql中有建表语句</li>
-<li>用户微博表 分表10张 用户表 1张</li>
-</ul>
-<h3 id="代理"><a href="#代理" class="headerlink" title="代理"></a>代理</h3><ul>
-<li>本文提供了使用代理爬取的代码，如果对速度有要求，请购买https代理，使用redis稳定维护一个Htpps代理池。</li>
-<li>注意微博是Https不能使用http代理，我测试了好多免费的http、https代理都不能用。<br>然后买了点发现还可以，但是效果不是很理想，Htpps代理延迟高，速度比不上Http。不过打发那被禁的3分钟绰绰有余。</li>
-<li>实测不使用代理，一天在50万条数据左右</li>
-</ul>
-<h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><ul>
-<li>redis本来是没有用的，后面做分布式的时候才加入进来，单机的话也可以去掉。可以换成直接在文件读取，简单方便。</li>
-</ul>
-<h3 id="分布式爬取："><a href="#分布式爬取：" class="headerlink" title="分布式爬取："></a>分布式爬取：</h3><h4 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h4><p>利用redis的list实现一个生产者-消费者模型，分布式爬取<br></p>
-<p>核心：Redis 列表(List)<br><br>环境：Python 3.6<br></p>
-<h4 id="具体："><a href="#具体：" class="headerlink" title="具体："></a>具体：</h4><p>每台机器都去Redis中获取userIds队列中的用户id，进行爬取，爬取结果再装入redis result队列。最后有一台机器负责从result队列中消费爬取的数据，可选择入库或者存入文件中。这样可以在多台机器共同运行，拓展也比较方便，copy过去 start_senior.py文件，只要有环境就能直接运行。所以可以召集小伙伴的电脑每个人都打开帮你爬数据丫丫，哈哈，只占用点CPU和带宽资源吧，因为IP限制所以对性能影响不大。</p>
-<h3 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h3><ol>
-<li>整理userId，存入userIds.txt文档</li>
-<li>运行redis_userIds.py 将id信息存入redis队列</li>
-<li>（选择使用代理）将代理IP存入redis</li>
-<li>（选择存入数据库）创建数据库和表</li>
-<li>直接运行start_simple.py或者start_senior.py 开始抓取</li>
+    <section class="markdown-content"><h2 id="Kafka-基本操作"><a href="#Kafka-基本操作" class="headerlink" title="Kafka 基本操作"></a>Kafka 基本操作</h2><h3 id="下载："><a href="#下载：" class="headerlink" title="下载："></a>下载：</h3><ol>
+<li>zookeeper: </li>
 </ol>
-<h3 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h3><ul>
-<li>微博m站现在已经有部分节点的数据结果返回集和url改了，现在是 page 分页，之后应该会是 senior_id 作用其实和page 一样，只不过 senior_id 是上一页返回的参数，即下一页从哪个ID开始。换一下URL参数就可以了</li>
-<li>Python的多线程貌似很鸡肋，并不能使用多核优点，而是减少了IO次数加速，所以多线程速度提升不是很明显，建议直接开多个窗口，多进程的搞。</li>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>kafka: </li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget http://mirrors.tuna.tsinghua.edu.cn/apache/kafka/2.2.0/kafka_2.11-2.2.0.tgz</span><br></pre></td></tr></table></figure>
+<h3 id="解压"><a href="#解压" class="headerlink" title="解压:"></a>解压:</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar -zxvf zookeeper-3.4.14.tar.gz</span><br><span class="line">tar -zxvf kafka_2.11-2.2.0.tgz</span><br></pre></td></tr></table></figure>
+<h3 id="配置："><a href="#配置：" class="headerlink" title="配置："></a>配置：</h3><h4 id="1-zookeeper"><a href="#1-zookeeper" class="headerlink" title="1. zookeeper"></a>1. zookeeper</h4><p>配置</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> zookeeper-3.4.14/config</span><br><span class="line">cp zoo_sample.cfg zoo.cfg</span><br></pre></td></tr></table></figure>
+<p>启动</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/zkServer.sh  start</span><br></pre></td></tr></table></figure>
+<p>连接测试，zookeeper 默认启动端口2181</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/zkCli.sh -server 127.0.0.1:2181</span><br></pre></td></tr></table></figure>
+<h4 id="2-kafka"><a href="#2-kafka" class="headerlink" title="2.kafka"></a>2.kafka</h4><p>创建日志目录 替换临时日志目录</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../kafka_2.11-2.2.0/</span><br><span class="line">mkdir logs</span><br></pre></td></tr></table></figure>
+<p>修改配置文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim config/server.properties</span><br></pre></td></tr></table></figure>
+<p>修改配置文件中21、31、36和60行如下</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">broker.id=1</span><br><span class="line">listeners=PLAINTEXT://:9092</span><br><span class="line">advertised.listeners=PLAINTEXT://127.0.0.1:9092</span><br><span class="line">log.dirs=/opt/soft/kafka_2.11-2.2.0/logs</span><br></pre></td></tr></table></figure>
+<p>后台启动kafka</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nohup ./bin/kafka-server-start.sh config/server.properties 1&gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><ul>
+<li>创建topic</li>
 </ul>
-<h3 id="项目地址"><a href="#项目地址" class="headerlink" title="项目地址"></a>项目地址</h3><p><a href="https://github.com/JiaoHongwei/Crawler_weibo" target="_blank" rel="noopener">https://github.com/JiaoHongwei/Crawler_weibo</a></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/kafka-topics.sh --create --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 1 --topic weibo</span><br></pre></td></tr></table></figure>
+<ul>
+<li>列出topic</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/kafka-topics.sh --list --zookeeper 127.0.0.1:2181</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建生产者 生产消息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/kafka-console-producer.sh --broker-list 127.0.0.1:9092 --topic weibo</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建消费者 消费topic</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/kafka-console-consumer.sh --bootstrap-server  127.0.0.1:9092 --topic weibo</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看Topic消息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/kafka-topics.sh --describe --zookeeper 127.0.0.1:2181 --topic weibo</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除topic消息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/kafka-topics.sh --delete --zookeeper 127.0.0.1:2181 --topic weibo</span><br></pre></td></tr></table></figure>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>可以开启两个窗口，一个用作生产者生产消息，一个用作消费者监听topic消费消息</p>
 </section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#Python">
-    <span class="tag-code">Python</span>
+  <a href="/tags#大数据">
+    <span class="tag-code">大数据</span>
   </a>
 
-  <a href="/tags#爬虫">
-    <span class="tag-code">爬虫</span>
+  <a href="/tags#消息队列">
+    <span class="tag-code">消息队列</span>
   </a>
 
       </div>
@@ -276,20 +247,13 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2019/02/22/分布式锁原理和实现/">
+      <a class="nav-left" href="/2019/03/07/Python-3-6-抓取微博m站数据/">
         <span class="nav-arrow">← </span>
         
-          分布式锁原理和实现
+          Python 3.6 抓取微博m站数据
         
       </a>
     
-    
-      <a class="nav-right" href="/2019/04/27/Kafka-基本操作/">
-        
-          Kafka 基本操作
-        
-        <span class="nav-arrow"> →</span>
-      </a>
     
   </div>
 
@@ -335,7 +299,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Python-3-6-抓取微博m站数据"><span class="toc-nav-text">Python 3.6 抓取微博m站数据</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#目录"><span class="toc-nav-text">目录</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#数据库"><span class="toc-nav-text">数据库</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#代理"><span class="toc-nav-text">代理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Redis"><span class="toc-nav-text">Redis</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#分布式爬取："><span class="toc-nav-text">分布式爬取：</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#原理："><span class="toc-nav-text">原理：</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#具体："><span class="toc-nav-text">具体：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#步骤："><span class="toc-nav-text">步骤：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#注意："><span class="toc-nav-text">注意：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#项目地址"><span class="toc-nav-text">项目地址</span></a></li></ol></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Kafka-基本操作"><span class="toc-nav-text">Kafka 基本操作</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#下载："><span class="toc-nav-text">下载：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#解压"><span class="toc-nav-text">解压:</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#配置："><span class="toc-nav-text">配置：</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-zookeeper"><span class="toc-nav-text">1. zookeeper</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#2-kafka"><span class="toc-nav-text">2.kafka</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#操作"><span class="toc-nav-text">操作</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#实例"><span class="toc-nav-text">实例</span></a></li></ol></li></ol>
     
   </div>
 </aside>
@@ -345,7 +309,7 @@
 
 <script>
   (function () {
-    var url = 'https://jiaohongwei.github.io/2019/03/07/Python-3-6-抓取微博m站数据/';
+    var url = 'https://jiaohongwei.github.io/2019/04/27/Kafka-基本操作/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -407,7 +371,7 @@
     var gitmentConfig = "jiaohongwei";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "Python 3.6 抓取微博m站数据",
+        id: "Kafka 基本操作",
         owner: "jiaohongwei",
         repo: "jiaohongwei.github.io",
         oauth: {
