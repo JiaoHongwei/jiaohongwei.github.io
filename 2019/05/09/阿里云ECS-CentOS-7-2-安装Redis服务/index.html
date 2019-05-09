@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="hongwei&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      阿里云ECS CentOS 7.2 安装Redis服务 | Hongwei&#39;s Diary
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/css/plugins/gitment.css">
+  
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hongwei's Diary</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="https://github.com/JiaoHongwei" class="item-link">GitHub</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="https://github.com/JiaoHongwei" class="menu-link">GitHub</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+<style>
+    .forkme{
+        display: none;
+    }
+    @media (min-width: 1500px) {
+        .forkme{
+            display: inline;
+        }
+    }
+</style>
+<a style="position: fixed;right: 0;z-index: 9999;" class="forkme" href="https://github.com/JiaoHongwei"><img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+
+
+    <div id="article-banner">
+  <h2>阿里云ECS CentOS 7.2 安装Redis服务</h2>
+  <p class="post-date">2019-05-09</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
+<li>查看系统版本 <code>lsb_release -a</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@iZ2ze1rex9zp7ain1q5h54Z ~]# lsb_release -a</span><br><span class="line">LSB Version:	:core-4.1-amd64:core-4.1-noarch</span><br><span class="line">Distributor ID:	CentOS</span><br><span class="line">Description:	CentOS Linux release 7.2.1511 (Core) </span><br><span class="line">Release:	7.2.1511</span><br><span class="line">Codename:	Core</span><br></pre></td></tr></table></figure>
+<h2 id="二、安装"><a href="#二、安装" class="headerlink" title="二、安装"></a>二、安装</h2><h3 id="1、设置Redis的仓库地址"><a href="#1、设置Redis的仓库地址" class="headerlink" title="1、设置Redis的仓库地址"></a>1、设置Redis的仓库地址</h3><p><code>yum install epel-release</code></p>
+<h3 id="2、安装redis"><a href="#2、安装redis" class="headerlink" title="2、安装redis"></a>2、安装redis</h3><p><code>yum install redis</code></p>
+<ul>
+<li><code>whereis redis</code>  查看配置文件在哪</li>
+<li>服务器和客户端在 <code>/usr/bin/redis-server redis-cli</code></li>
+</ul>
+<h3 id="3、修改配置文件"><a href="#3、修改配置文件" class="headerlink" title="3、修改配置文件"></a>3、修改配置文件</h3><p><code>vim /etc/redis.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#监听所有的IP地址（61行）</span><br><span class="line">bind 127.0.0.1 注释掉为 #bind 127.0.0.1</span><br><span class="line">#设置为守护进程（128行）</span><br><span class="line">daemonize no 改为 daemonize yes </span><br><span class="line">#设置密码（480行）</span><br><span class="line">requirepass xxx</span><br><span class="line">#最大物理内存设置（537行）在真实环境必须部署，否则物理内存会被耗尽。一般配置200mb/500mb/1gb/2gb。配置了最大内存 maxmemory 之后记得配置过期删除策略</span><br><span class="line">maxmemory 200mb</span><br><span class="line">#过期删除策略（560行）</span><br><span class="line">    # volatile-lru -&gt; 根据LRU算法生成的过期时间来删除。 </span><br><span class="line">    # allkeys-lru -&gt; 根据LRU算法删除任何key。 </span><br><span class="line">    # volatile-random -&gt; 根据过期设置来随机删除key。 </span><br><span class="line">    # allkeys-&gt;random -&gt; 无差别随机删。 </span><br><span class="line">    # volatile-ttl -&gt; 根据最近过期时间来删除（辅以TTL） </span><br><span class="line">    # noeviction -&gt; 谁也不删，直接在写操作时返回错误。</span><br><span class="line">maxmemory-ploicy volatile-lru</span><br><span class="line"></span><br><span class="line">*找不到可以先拉到windows下查找定位</span><br></pre></td></tr></table></figure>
+<h3 id="4、启动Redis"><a href="#4、启动Redis" class="headerlink" title="4、启动Redis"></a>4、启动Redis</h3><p><code>service redis start</code> </p>
+<ul>
+<li>或者指定配置文件启动 <br></li>
+</ul>
+<p><code>redis-server /usr/local/redis_cluster/7000/redis.conf</code></p>
+<ul>
+<li>如果需要设置开机自动启动</li>
+</ul>
+<p><code>chkconfig redis on</code></p>
+<h3 id="5、查看状态"><a href="#5、查看状态" class="headerlink" title="5、查看状态"></a>5、查看状态</h3><ul>
+<li><code>redis-server -v</code> 查看版本 </li>
+<li><code>service redis status</code> 查看redis状态</li>
+<li><code>service redis restart</code> redis 重新启动</li>
+<li><code>service redis stop</code> 关闭redis服务</li>
+</ul>
+<h3 id="6、测试启动"><a href="#6、测试启动" class="headerlink" title="6、测试启动"></a>6、测试启动</h3><ul>
+<li><code>redis-cli -h 127.0.0.1 -p 6379 -a password</code></li>
+<li>如出现<code>(error) NOAUTH Authentication required.</code> 错误，如下<code>auth password</code>指定密码</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; keys *</span><br><span class="line">(error) NOAUTH Authentication required.</span><br><span class="line">127.0.0.1:6379&gt; auth password</span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+<h3 id="7、Redis配置"><a href="#7、Redis配置" class="headerlink" title="7、Redis配置"></a>7、Redis配置</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">7.1. Redis默认不是以守护进程的方式运行，可以通过该配置项修改，使用yes启用守护进程</span><br><span class="line"></span><br><span class="line">    daemonize no</span><br><span class="line"></span><br><span class="line">7.2. 当Redis以守护进程方式运行时，Redis默认会把pid写入/var/run/redis.pid文件，可以通过pidfile指定</span><br><span class="line"></span><br><span class="line">    pidfile /var/run/redis.pid</span><br><span class="line"></span><br><span class="line">7.3. 指定Redis监听端口，默认端口为6379，作者在自己的一篇博文中解释了为什么选用6379作为默认端口，因为6379在手机按键上MERZ对应的号码，而MERZ取自意大利歌女Alessia Merz的名字</span><br><span class="line"></span><br><span class="line">    port 6379</span><br><span class="line"></span><br><span class="line">7.7. 绑定的主机地址</span><br><span class="line"></span><br><span class="line">    bind 127.0.0.1</span><br><span class="line"></span><br><span class="line">7.5.当 客户端闲置多长时间后关闭连接，如果指定为0，表示关闭该功能</span><br><span class="line"></span><br><span class="line">    timeout 300</span><br><span class="line"></span><br><span class="line">7.6. 指定日志记录级别，Redis总共支持四个级别：debug、verbose、notice、warning，默认为verbose</span><br><span class="line"></span><br><span class="line">    loglevel verbose</span><br><span class="line"></span><br><span class="line">7.7. 日志记录方式，默认为标准输出，如果配置Redis为守护进程方式运行，而这里又配置为日志记录方式为标准输出，则日志将会发送给/dev/null</span><br><span class="line"></span><br><span class="line">    logfile stdout</span><br><span class="line"></span><br><span class="line">7.8. 设置数据库的数量，默认数据库为0，可以使用SELECT &lt;dbid&gt;命令在连接上指定数据库id</span><br><span class="line"></span><br><span class="line">    databases 16</span><br><span class="line"></span><br><span class="line">7.9. 指定在多长时间内，有多少次更新操作，就将数据同步到数据文件，可以多个条件配合</span><br><span class="line"></span><br><span class="line">    save &lt;seconds&gt; &lt;changes&gt;</span><br><span class="line"></span><br><span class="line">    Redis默认配置文件中提供了三个条件：</span><br><span class="line"></span><br><span class="line">    save 900 1</span><br><span class="line"></span><br><span class="line">    save 300 10</span><br><span class="line"></span><br><span class="line">    save 60 10000</span><br><span class="line"></span><br><span class="line">    分别表示900秒（15分钟）内有1个更改，300秒（5分钟）内有10个更改以及60秒内有10000个更改。</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">7.10. 指定存储至本地数据库时是否压缩数据，默认为yes，Redis采用LZF压缩，如果为了节省CPU时间，可以关闭该选项，但会导致数据库文件变的巨大</span><br><span class="line"></span><br><span class="line">    rdbcompression yes</span><br><span class="line"></span><br><span class="line">7.11. 指定本地数据库文件名，默认值为dump.rdb</span><br><span class="line"></span><br><span class="line">    dbfilename dump.rdb</span><br><span class="line"></span><br><span class="line">7.12. 指定本地数据库存放目录</span><br><span class="line"></span><br><span class="line">    dir ./</span><br><span class="line"></span><br><span class="line">7.13. 设置当本机为slav服务时，设置master服务的IP地址及端口，在Redis启动时，它会自动从master进行数据同步</span><br><span class="line"></span><br><span class="line">    slaveof &lt;masterip&gt; &lt;masterport&gt;</span><br><span class="line"></span><br><span class="line">7.17. 当master服务设置了密码保护时，slav服务连接master的密码</span><br><span class="line"></span><br><span class="line">    masterauth &lt;master-password&gt;</span><br><span class="line"></span><br><span class="line">7.15. 设置Redis连接密码，如果配置了连接密码，客户端在连接Redis时需要通过AUTH &lt;password&gt;命令提供密码，默认关闭</span><br><span class="line"></span><br><span class="line">    requirepass foobared</span><br><span class="line"></span><br><span class="line">7.16. 设置同一时间最大客户端连接数，默认无限制，Redis可以同时打开的客户端连接数为Redis进程可以打开的最大文件描述符数，如果设置 maxclients 0，表示不作限制。</span><br><span class="line">    当客户端连接数到达限制时，Redis会关闭新的连接并向客户端返回max number of clients reached错误信息</span><br><span class="line"></span><br><span class="line">    maxclients 128</span><br><span class="line"></span><br><span class="line">7.17. 指定Redis最大内存限制，Redis在启动时会把数据加载到内存中，达到最大内存后，Redis会先尝试清除已到期或即将到期的Key，</span><br><span class="line">    当此方法处理 后，仍然到达最大内存设置，将无法再进行写入操作，但仍然可以进行读取操作。Redis新的vm机制，会把Key存放内存，Value会存放在swap区</span><br><span class="line"></span><br><span class="line">    maxmemory &lt;bytes&gt;</span><br><span class="line"></span><br><span class="line">7.18. 指定是否在每次更新操作后进行日志记录，Redis在默认情况下是异步的把数据写入磁盘，</span><br><span class="line">    如果不开启，可能会在断电时导致一段时间内的数据丢失。因为 redis本身同步数据文件是按上面save条件来同步的，所以有的数据会在一段时间内只存在于内存中。默认为no</span><br><span class="line"></span><br><span class="line">    appendonly no</span><br><span class="line"></span><br><span class="line">7.19. 指定更新日志文件名，默认为appendonly.aof</span><br><span class="line"></span><br><span class="line">     appendfilename appendonly.aof</span><br><span class="line"></span><br><span class="line">7.20. 指定更新日志条件，共有3个可选值： </span><br><span class="line">    no：表示等操作系统进行数据缓存同步到磁盘（快） </span><br><span class="line">    always：表示每次更新操作后手动调用fsync()将数据写到磁盘（慢，安全） </span><br><span class="line">    everysec：表示每秒同步一次（折衷，默认值）</span><br><span class="line"></span><br><span class="line">    appendfsync everysec</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">7.21. 指定是否启用虚拟内存机制，默认值为no，</span><br><span class="line">   简单的介绍一下，VM机制将数据分页存放，由Redis将访问量较少的页即冷数据swap到磁盘上，访问多的页面由磁盘自动换出到内存中（在后面的文章我会仔细分析Redis的VM机制）</span><br><span class="line"></span><br><span class="line">     vm-enabled no</span><br><span class="line"></span><br><span class="line">7.22. 虚拟内存文件路径，默认值为/tmp/redis.swap，不可多个Redis实例共享</span><br><span class="line"></span><br><span class="line">     vm-swap-file /tmp/redis.swap</span><br><span class="line"></span><br><span class="line">7.23. 将所有大于vm-max-memory的数据存入虚拟内存,无论vm-max-memory设置多小,所有索引数据都是内存存储的(Redis的索引数据 就是keys),</span><br><span class="line">    也就是说,当vm-max-memory设置为0的时候,其实是所有value都存在于磁盘。默认值为0</span><br><span class="line"></span><br><span class="line">     vm-max-memory 0</span><br><span class="line"></span><br><span class="line">7.24. Redis swap文件分成了很多的page，一个对象可以保存在多个page上面，但一个page上不能被多个对象共享，vm-page-size是要根据存储的 数据大小来设定的，</span><br><span class="line">    作者建议如果存储很多小对象，page大小最好设置为32或者64bytes；如果存储很大大对象，则可以使用更大的page，如果不 确定，就使用默认值</span><br><span class="line"></span><br><span class="line">     vm-page-size 32</span><br><span class="line"></span><br><span class="line">7.25. 设置swap文件中的page数量，由于页表（一种表示页面空闲或使用的bitmap）是在放在内存中的，，在磁盘上每8个pages将消耗1byte的内存。</span><br><span class="line"></span><br><span class="line">     vm-pages 134217728</span><br><span class="line"></span><br><span class="line">7.26. 设置访问swap文件的线程数,最好不要超过机器的核数,如果设置为0,那么所有对swap文件的操作都是串行的，可能会造成比较长时间的延迟。默认值为4</span><br><span class="line"></span><br><span class="line">     vm-max-threads 4</span><br><span class="line"></span><br><span class="line">7.27. 设置在向客户端应答时，是否把较小的包合并为一个包发送，默认为开启</span><br><span class="line"></span><br><span class="line">    glueoutputbuf yes</span><br><span class="line"></span><br><span class="line">7.28. 指定在超过一定的数量或者最大的元素超过某一临界值时，采用一种特殊的哈希算法</span><br><span class="line"></span><br><span class="line">    hash-max-zipmap-entries 64</span><br><span class="line"></span><br><span class="line">    hash-max-zipmap-value 512</span><br><span class="line"></span><br><span class="line">7.29. 指定是否激活重置哈希，默认为开启（后面在介绍Redis的哈希算法时具体介绍）</span><br><span class="line"></span><br><span class="line">    activerehashing yes</span><br><span class="line"></span><br><span class="line">7.30. 指定包含其它的配置文件，可以在同一主机上多个Redis实例之间使用同一份配置文件，而同时各个实例又拥有自己的特定配置文件</span><br><span class="line"></span><br><span class="line">    include /path/to/local.conf</span><br></pre></td></tr></table></figure>
+<h3 id="8、防火墙配置"><a href="#8、防火墙配置" class="headerlink" title="8、防火墙配置"></a>8、防火墙配置</h3><ul>
+<li>使用redis desktop manager连接redis，如果连接不上需要将6379端口加到防火墙的开放白名单中，使用如下命令(centos 7.2):</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=6379/tcp</span><br><span class="line">firewall-cmd --reload //生效</span><br></pre></td></tr></table></figure>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Linux">
+    <span class="tag-code">Linux</span>
+  </a>
+
+  <a href="/tags#Redis">
+    <span class="tag-code">Redis</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/04/27/Kafka-基本操作/">
+        <span class="nav-arrow">← </span>
+        
+          Kafka 基本操作
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#一、环境"><span class="toc-nav-text">一、环境</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#二、安装"><span class="toc-nav-text">二、安装</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1、设置Redis的仓库地址"><span class="toc-nav-text">1、设置Redis的仓库地址</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2、安装redis"><span class="toc-nav-text">2、安装redis</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3、修改配置文件"><span class="toc-nav-text">3、修改配置文件</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4、启动Redis"><span class="toc-nav-text">4、启动Redis</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#5、查看状态"><span class="toc-nav-text">5、查看状态</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#6、测试启动"><span class="toc-nav-text">6、测试启动</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#7、Redis配置"><span class="toc-nav-text">7、Redis配置</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#8、防火墙配置"><span class="toc-nav-text">8、防火墙配置</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://jiaohongwei.github.io/2019/05/09/阿里云ECS-CentOS-7-2-安装Redis服务/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "jiaohongwei";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "阿里云ECS CentOS 7.2 安装Redis服务",
+        owner: "jiaohongwei",
+        repo: "jiaohongwei.github.io",
+        oauth: {
+          client_id: "2ac0968c10be35494f4b",
+          client_secret: "e8afa8b7adbeb92905f17b646db578138e5c2bde"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2016 - 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'false';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
